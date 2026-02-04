@@ -1,0 +1,152 @@
+.product-details-container {
+  padding: 40px 80px;
+}
+
+/* Responsive Grid */
+.upper-half {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+@media (max-width: 900px) {
+  .upper-half {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Images */
+.image-section .main-image img {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.thumbnail-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.thumbnail.active {
+  border-color: teal;
+}
+
+/* Info Section */
+.seller-title h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00927c;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.price-box {
+  margin: 20px 0;
+}
+
+.price-box .price {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-right: 12px;
+}
+
+.price-box .mrp {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 12px;
+}
+
+.price-box .discount {
+  color: #00927c;
+}
+
+.price-box .tax-note {
+  color: #666;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.highlights {
+  margin: 20px 0;
+}
+
+.highlights div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.size-box, .quantity-box {
+  margin: 20px 0;
+}
+
+.size-row {
+  display: flex;
+  gap: 10px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.description-box {
+  margin-top: 30px;
+}
+
+/* Reviews */
+.review-section {
+  margin-top: 60px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Similar Products */
+.similar-products {
+  margin-top: 60px;
+}
+
+.similar-products h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Loader & Error */
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
