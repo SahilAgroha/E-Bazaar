@@ -1,0 +1,20 @@
+target/
+.git/
+.idea/
+*.log
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore environment variable files
+.env
+.env.local
+
+# Ignore IDE specific files
+.idea/
+.vscode/
+
+# Spring Boot & Java ignores
+target/
+*.class
+*.jar

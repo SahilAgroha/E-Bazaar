@@ -18,6 +18,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -29,9 +30,18 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentOrderRepo paymentOrderRepo;
     private OrderRepo orderRepo;
 
-    private String apiKey="apiKey";
-    private String apiSecret="apiSecret";
-    private String stripeSecretKey="stripesecretekey";
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
+
+    @Value("${app.razorpay.api-key}")
+    private String apiKey;
+
+    @Value("${app.razorpay.api-secret}")
+    private String apiSecret;
+
+    @Value("${app.stripe.secret-key}")
+    private String stripeSecretKey;
+
 
 
     @Override
@@ -102,7 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
             notify.put("email",true);
             paymentLinkRequest.put("notify",notify);
 
-            paymentLinkRequest.put("callback_url","http://localhost:3000/payment-success/"+orderId);
+            paymentLinkRequest.put("callback_url",allowedOrigins+"/payment-success/"+orderId);
             paymentLinkRequest.put("callback_method","get");
 
             PaymentLink paymentLink=razorpayClient.paymentLink.create(paymentLinkRequest);
@@ -125,8 +135,8 @@ public class PaymentServiceImpl implements PaymentService {
         SessionCreateParams params=SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("http://localhost:3000/payment-success/"+orderId)
-                .setCancelUrl("http://localhost:3000/payment-cancel/")
+                .setSuccessUrl(allowedOrigins+"/payment-success/"+orderId)
+                .setCancelUrl(allowedOrigins+"/payment-cancel/")
                 .addLineItem(SessionCreateParams.LineItem.builder()
                         .setQuantity(1L)
                         .setPriceData(SessionCreateParams.LineItem.PriceData.builder()

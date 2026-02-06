@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: Buy-Baazar
+  profiles:
+    active: dev # Change this to 'prod' for Render deployment
+
+server:
+  port: 8080 # Matches your pattern

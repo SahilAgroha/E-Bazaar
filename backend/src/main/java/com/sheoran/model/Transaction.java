@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 @EqualsAndHashCode
 public class Transaction {
 

@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    # Database values from Aiven
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL:update} # Allows you to change this without re-deploying
+    show-sql: ${JPA_SHOW_SQL:false}
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  # Email Configuration (Gmail App Password)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Custom App Security & Payment Keys
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS}
+  razorpay:
+    api-key: ${RAZORPAY_KEY}
+    api-secret: ${RAZORPAY_SECRET}
+  stripe:
+    secret-key: ${STRIPE_SECRET}
+
+# Server port configuration
+server:
+  port: ${PORT:8080} # Render usually provides a PORT variable

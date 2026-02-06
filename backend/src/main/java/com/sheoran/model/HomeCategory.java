@@ -10,8 +10,6 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode
 public class HomeCategory {
 
