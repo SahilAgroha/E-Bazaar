@@ -1,18 +1,18 @@
 spring:
   datasource:
-    # Database values from Aiven
+    # Use the Supabase Transaction Pooler URL for better performance on Render
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver # Updated for PostgreSQL
 
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL:update} # Allows you to change this without re-deploying
+      ddl-auto: ${JPA_DDL:update}
     show-sql: ${JPA_SHOW_SQL:false}
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    # Specify PostgreSQL dialect for Hibernate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-  # Email Configuration (Gmail App Password)
   mail:
     host: smtp.gmail.com
     port: 587
@@ -25,7 +25,6 @@ spring:
           starttls:
             enable: true
 
-# Custom App Security & Payment Keys
 app:
   cors:
     allowed-origins: ${ALLOWED_ORIGINS}
@@ -35,6 +34,6 @@ app:
   stripe:
     secret-key: ${STRIPE_SECRET}
 
-# Server port configuration
 server:
-  port: ${PORT:8080} # Render usually provides a PORT variable
+  # Render automatically injects the PORT variable
+  port: ${PORT:8080}
