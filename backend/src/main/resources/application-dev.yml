@@ -1,9 +1,9 @@
 spring:
   datasource:
     # Use the Transaction Pooler Host from your dashboard
-    url: ${DB_URL:jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/buybaazar}
-    username: ${DB_USER:postgres.asubdlfyzveevikjmnmz}
-    password: ${DB_PASSWORD:Sahil444Agroha}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -17,8 +17,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USER:sahilsheo444@gmail.com}
-    password: ${MAIL_PASS:sujm gufu hncq kchf}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
     properties:
       mail:
         smtp:
@@ -32,11 +32,11 @@ app:
     allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000}
   razorpay:
     # Test credentials for local development
-    api-key: ${RAZORPAY_KEY:rzp_test_SCojDSLmfqCbNU}
-    api-secret: ${RAZORPAY_SECRET:hLegU1rovtOus6Qm4hdonAK7}
+    api-key: ${RAZORPAY_KEY}
+    api-secret: ${RAZORPAY_SECRET}
   stripe:
     # Test credential for local development
-    secret-key: ${STRIPE_SECRET:sk_test_51SxlmJLvNTauDOqlOA8XNFH0Y18qoEeehMdEGHiMCMesw10lwt5xnfqiSpN6l2kIALN6GGkMpLt7qi2d09cPIJAi00kXKFudfR}
+    secret-key: ${STRIPE_SECRET}
 
 server:
   # Standard port for local backend testing
