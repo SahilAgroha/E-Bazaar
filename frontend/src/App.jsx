@@ -38,6 +38,8 @@ function App() {
   const {seller,auth}=useAppSelector(store=>store)
   const navigate=useNavigate()
 
+  console.log("Current API URL:", import.meta.env.VITE_API_URL);
+
   useEffect(()=>{
     dispatch(fetchSellerProfile(localStorage.getItem("jwt") || ""))
     dispatch(createHomeCategories(homeCategories))

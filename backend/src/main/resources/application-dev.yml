@@ -1,17 +1,16 @@
 spring:
   datasource:
     # Use the Transaction Pooler Host from your dashboard
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    url: ${jdbc:mysql://localhost:3306/buyBaazarL}
+    username: ${root}
+    password: ${Agroha444@}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    # Specify PostgreSQL Dialect
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
   # Email configuration for local/dev testing
   mail:
