@@ -8,14 +8,14 @@ export default defineConfig({
   plugins: [
     react(),tailwindcss(),
   ],
-  theme:{
-    extends:{
-      colors:{
-        "primary-color":"#00927c",
-        "secondary-color":"#EAF0F1"
-      }
-    }
-  },
+  // theme:{
+  //   extends:{
+  //     colors:{
+  //       "primary-color":"#00927c",
+  //       "secondary-color":"#EAF0F1"
+  //     }
+  //   }
+  // },
   server: {
     port: 3000
   }
