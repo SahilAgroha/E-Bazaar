@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class AdminCouponController {
         User user=userService.findUserByJwtToken(jwt);
         Cart cart;
         if (apply.equals("true")){
-            cart=couponService.applyCoupon(code,orderValue,user);
+            cart=couponService.applyCoupon(code, BigDecimal.valueOf(orderValue),user);
         } else {
             cart=couponService.removeCoupon(code,user);
         }

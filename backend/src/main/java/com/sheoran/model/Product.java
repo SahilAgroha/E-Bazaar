@@ -1,55 +1,76 @@
 package com.sheoran.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
+@Table(name = "products")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(length = 2000)
     private String description;
 
-    private int mrpPrice;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal mrpPrice;
 
-    private int sellingPrice;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal sellingPrice;
 
-    private int discountPercentage;
+    @Column(nullable = false)
+    private Integer discountPercentage;
 
-    private int quantity;
+    @Column(nullable = false)
+    private Integer quantity;
 
     private String color;
 
     @ElementCollection
-    private List<String> images=new ArrayList<>();
+    @CollectionTable(
+            name = "product_images",
+            joinColumns = @JoinColumn(name = "product_id")
+    )
+    @Column(name = "image_url")
+    private List<String> images = new ArrayList<>();
 
-    private int numRating;
+    private Integer numRating = 0;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
 
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private String sizes;
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Review> reviews=new ArrayList<>();
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Review> reviews = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -75,35 +96,35 @@ public class Product {
         this.description = description;
     }
 
-    public int getMrpPrice() {
+    public BigDecimal getMrpPrice() {
         return mrpPrice;
     }
 
-    public void setMrpPrice(int mrpPrice) {
+    public void setMrpPrice(BigDecimal mrpPrice) {
         this.mrpPrice = mrpPrice;
     }
 
-    public int getSellingPrice() {
+    public BigDecimal getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(int sellingPrice) {
+    public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
 
-    public int getDiscountPercentage() {
+    public Integer getDiscountPercentage() {
         return discountPercentage;
     }
 
-    public void setDiscountPercentage(int discountPercentage) {
+    public void setDiscountPercentage(Integer discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -123,11 +144,11 @@ public class Product {
         this.images = images;
     }
 
-    public int getNumRating() {
+    public Integer getNumRating() {
         return numRating;
     }
 
-    public void setNumRating(int numRating) {
+    public void setNumRating(Integer numRating) {
         this.numRating = numRating;
     }
 

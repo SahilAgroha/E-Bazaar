@@ -5,54 +5,73 @@ import com.sheoran.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "orders")
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String orderId;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private Long sellerId;
 
-    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<OrderItem> orderItems=new ArrayList<>();
+    @OneToMany(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_address_id", nullable = false)
     private Address shippingAddress;
 
     @Embedded
     private PaymentDetails paymentDetails;
 
-    private double totalMrpPrice;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal totalMrpPrice;
 
-    private Integer totalSellingPrice;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal totalSellingPrice;
 
-    private Integer discount;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal discount;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderStatus orderStatus;
 
+    @Column(nullable = false)
     private int totalItems;
 
-    private PaymentStatus paymentStatus=PaymentStatus.PENDING;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
-    private LocalDateTime orderDate=LocalDateTime.now();
+    @Column(nullable = false)
+    private LocalDateTime orderDate = LocalDateTime.now();
 
-    private LocalDateTime deliverDate=orderDate.plusDays(7);
+    @Column(nullable = false)
+    private LocalDateTime deliverDate = LocalDateTime.now().plusDays(7);
 
     public Long getId() {
         return id;
@@ -110,27 +129,27 @@ public class Order {
         this.paymentDetails = paymentDetails;
     }
 
-    public double getTotalMrpPrice() {
+    public BigDecimal getTotalMrpPrice() {
         return totalMrpPrice;
     }
 
-    public void setTotalMrpPrice(double totalMrpPrice) {
+    public void setTotalMrpPrice(BigDecimal totalMrpPrice) {
         this.totalMrpPrice = totalMrpPrice;
     }
 
-    public Integer getTotalSellingPrice() {
+    public BigDecimal getTotalSellingPrice() {
         return totalSellingPrice;
     }
 
-    public void setTotalSellingPrice(Integer totalSellingPrice) {
+    public void setTotalSellingPrice(BigDecimal totalSellingPrice) {
         this.totalSellingPrice = totalSellingPrice;
     }
 
-    public Integer getDiscount() {
+    public BigDecimal getDiscount() {
         return discount;
     }
 
-    public void setDiscount(Integer discount) {
+    public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
 

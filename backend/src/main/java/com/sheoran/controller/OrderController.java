@@ -92,7 +92,7 @@ public class OrderController {
         SellerReport report=sellerReportService.getSellerReport(seller);
 
         report.setCancelOrders(report.getCancelOrders()+1);
-        report.setTotalRefunds(report.getTotalRefunds()+order.getTotalSellingPrice());
+        report.setTotalRefunds(report.getTotalRefunds().add(order.getTotalSellingPrice()));
         sellerReportService.updateSellerReport(report);
 
         return new ResponseEntity<>(order,HttpStatus.OK);

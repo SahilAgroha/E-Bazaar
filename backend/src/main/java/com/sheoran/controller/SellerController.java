@@ -40,7 +40,7 @@ public class SellerController {
     @Autowired
     private SellerReportService sellerReportService;
 
-    @PostMapping("/login")
+    @PostMapping("/login")   // 3
     public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest req) throws Exception {
         String otp=req.getOtp();
         String email= req.getEmail();
@@ -51,7 +51,7 @@ public class SellerController {
         return ResponseEntity.ok(authResponse);
     }
 
-    @PatchMapping("/verify/{otp}")
+    @PatchMapping("/verify/{otp}")  // 2
     public ResponseEntity<Seller> verifySellerEmail(@PathVariable String otp ) throws Exception{
         VerificationCode verificationCode=verificationCodeRepo.findByOtp(otp);
         if (verificationCode==null || !verificationCode.getOtp().equals(otp)){
@@ -61,7 +61,7 @@ public class SellerController {
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping  //    1
     public ResponseEntity<Seller> createSeller(@RequestBody Seller seller ) throws Exception {
         Seller savedSeller=sellerService.createSeller(seller);
         String otp= OtpUtil.generateOtp();
@@ -78,39 +78,39 @@ public class SellerController {
         return new ResponseEntity<>(savedSeller,HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")    //   4
     public ResponseEntity<Seller> getSellerById(@PathVariable Long id) throws SellerException {
         Seller seller=sellerService.getSellerById(id);
         return new ResponseEntity<>(seller,HttpStatus.OK);
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/profile")   //    5
     public ResponseEntity<Seller> getSellerByJwt(@RequestHeader("Authorization") String jwt) throws Exception {
         Seller seller=sellerService.getSellerProfile(jwt);
         return new ResponseEntity<>(seller,HttpStatus.OK);
     }
 
-    @GetMapping("/report")
+    @GetMapping("/report")  //   6
     public ResponseEntity<SellerReport> getSellerReport(@RequestHeader("Authorization") String jwt) throws Exception {
         Seller seller=sellerService.getSellerProfile(jwt);
         SellerReport sellerReport=sellerReportService.getSellerReport(seller);
         return new ResponseEntity<>(sellerReport,HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping   //   7
     public ResponseEntity<List<Seller>> getAllSellers(@RequestParam(required = false) AccountStatus status){
         List<Seller> sellers=sellerService.getAllSellers(status);
         return new ResponseEntity<>(sellers,HttpStatus.OK);
     }
 
-    @PatchMapping
+    @PatchMapping  //  9
     public ResponseEntity<Seller> updateSeller(@RequestHeader("Authorization") String jwt, @RequestBody Seller seller) throws Exception {
         Seller profile=sellerService.getSellerProfile(jwt);
         Seller updateSeller=sellerService.updateSeller(profile.getId(), seller);
         return new ResponseEntity<>(updateSeller,HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")    //    8
     public ResponseEntity<Void> deleteSeller(@PathVariable Long id) throws Exception {
         sellerService.deleteSeller(id);
         return ResponseEntity.noContent().build();

@@ -1,46 +1,66 @@
 package com.sheoran.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sheoran.domain.AccountStatus;
 import com.sheoran.domain.USER_ROLE;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "sellers")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Seller {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String sellerName;
 
-    private String Mobile;
+    @Column(nullable = false)
+    private String mobile;
 
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Embedded
-    private BusinessDetails businessDetails=new BusinessDetails();
+    private BusinessDetails businessDetails = new BusinessDetails();
 
     @Embedded
-    private BankDetails bankDetails=new BankDetails();
+    @AttributeOverrides({
+            @AttributeOverride(name = "accountNumber", column = @Column(name = "bank_account_number")),
+            @AttributeOverride(name = "accountHolderName", column = @Column(name = "bank_account_holder_name")),
+            @AttributeOverride(name = "ifscCode", column = @Column(name = "bank_ifsc_code"))
+    })
+    private BankDetails bankDetails = new BankDetails();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Address pickupAddress=new Address();
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "pickup_address_id")
+    private Address pickupAddress = new Address();
 
-    private String GSTIN;
+    private String gstin;
 
-    private USER_ROLE role=USER_ROLE.ROLE_SELLER;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private USER_ROLE role = USER_ROLE.ROLE_SELLER;
 
-    private boolean isEmailVerified=false;
+    @Column(nullable = false)
+    private boolean emailVerified = false;
 
-    private AccountStatus accountStatus=AccountStatus.PENDING_VERIFICATION;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
 
     public Long getId() {
         return id;
@@ -59,11 +79,11 @@ public class Seller {
     }
 
     public String getMobile() {
-        return Mobile;
+        return mobile;
     }
 
     public void setMobile(String mobile) {
-        Mobile = mobile;
+        this.mobile = mobile;
     }
 
     public String getEmail() {
@@ -107,11 +127,11 @@ public class Seller {
     }
 
     public String getGSTIN() {
-        return GSTIN;
+        return gstin;
     }
 
-    public void setGSTIN(String GSTIN) {
-        this.GSTIN = GSTIN;
+    public void setGSTIN(String gstin) {
+        this.gstin = gstin;
     }
 
     public USER_ROLE getRole() {
@@ -123,11 +143,11 @@ public class Seller {
     }
 
     public boolean isEmailVerified() {
-        return isEmailVerified;
+        return emailVerified;
     }
 
     public void setEmailVerified(boolean emailVerified) {
-        isEmailVerified = emailVerified;
+        this.emailVerified = emailVerified;
     }
 
     public AccountStatus getAccountStatus() {
@@ -137,4 +157,7 @@ public class Seller {
     public void setAccountStatus(AccountStatus accountStatus) {
         this.accountStatus = accountStatus;
     }
+
+
+
 }

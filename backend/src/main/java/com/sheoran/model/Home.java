@@ -17,17 +17,6 @@ public class Home {
 
     private List<Deal> deals;
 
-    public Home(List<HomeCategory> grid, List<HomeCategory> shopByCategories, List<HomeCategory> electricCategories, List<HomeCategory> dealCategories, List<Deal> deals) {
-        this.grid = grid;
-        this.shopByCategories = shopByCategories;
-        this.electricCategories = electricCategories;
-        this.dealCategories = dealCategories;
-        this.deals = deals;
-    }
-
-    public Home() {
-    }
-
     public List<HomeCategory> getGrid() {
         return grid;
     }

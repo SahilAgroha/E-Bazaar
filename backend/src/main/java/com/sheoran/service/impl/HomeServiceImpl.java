@@ -21,44 +21,46 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public Home createHomePageData(List<HomeCategory> allCategories) {
 
-        List<HomeCategory> gridCategories=allCategories.stream()
-                .filter(category->
-                        category.getSection()== HomeCategorySection.GRID)
+        List<HomeCategory> gridCategories = allCategories.stream()
+                .filter(category -> category.getSection() == HomeCategorySection.GRID)
                 .toList();
 
-        List<HomeCategory> shopByCategories=allCategories.stream()
-                .filter(category->
-                        category.getSection()== HomeCategorySection.SHOP_BY_CATEGORIES)
+        List<HomeCategory> shopByCategories = allCategories.stream()
+                .filter(category -> category.getSection() == HomeCategorySection.SHOP_BY_CATEGORIES)
                 .toList();
 
-        List<HomeCategory> electricCategories=allCategories.stream()
-                .filter(category->
-                        category.getSection()== HomeCategorySection.ELECTRIC_CATEGORIES)
+        List<HomeCategory> electricCategories = allCategories.stream()
+                .filter(category -> category.getSection() == HomeCategorySection.ELECTRIC_CATEGORIES)
                 .toList();
 
-        List<HomeCategory> dealCategories=allCategories.stream()
-                .filter(category->
-                        category.getSection()== HomeCategorySection.DEALS)
+        List<HomeCategory> dealCategories = allCategories.stream()
+                .filter(category -> category.getSection() == HomeCategorySection.DEALS)
                 .toList();
 
-        List<Deal> createDeals=new ArrayList<>();
+        List<Deal> createDeals;
 
-        if (dealRepo.findAll().isEmpty()){
-            List<Deal> deals=allCategories.stream()
-                    .filter(category->category.getSection()==HomeCategorySection.DEALS)
-                    .map(category->new Deal(null,10,category))
-                    .toList();
-            createDeals=dealRepo.saveAll(deals);
+        if (dealRepo.findAll().isEmpty()) {
+
+            List<Deal> deals = dealCategories.stream()
+                    .map(category -> {
+                        Deal deal = new Deal();
+                        deal.setDiscount(10);
+                        deal.setCategory(category);
+                        return deal;
+                    })
+                    .collect(Collectors.toList());
+
+            createDeals = dealRepo.saveAll(deals);
+
         } else {
-            createDeals=dealRepo.findAll();
+            createDeals = dealRepo.findAll();
         }
 
-        Home home=new Home();
+        Home home = new Home();
         home.setGrid(gridCategories);
         home.setElectricCategories(electricCategories);
         home.setShopByCategories(shopByCategories);
         home.setDeals(createDeals);
-
 
         return home;
     }

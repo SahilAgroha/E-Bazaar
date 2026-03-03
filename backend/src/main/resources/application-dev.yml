@@ -1,18 +1,18 @@
 spring:
   datasource:
-    # Use the Transaction Pooler Host from your dashboard
-    url: ${jdbc:mysql://localhost:3306/buyBaazarL}
-    username: ${root}
-    password: ${Agroha444@}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Use the Supabase Transaction Pooler URL for better performance on Render
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver # Updated for PostgreSQL
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: ${JPA_DDL:update}
+    show-sql: ${JPA_SHOW_SQL:false}
 
-  # Email configuration for local/dev testing
+
+ # Email configuration for local/dev testing
   mail:
     host: smtp.gmail.com
     port: 587

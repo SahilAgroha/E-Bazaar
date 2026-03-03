@@ -1,11 +1,14 @@
 package com.sheoran.request;
 
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Data
 public class AddItemRequest {
 
     private String size;
+
+//    @Min(1)
     private int quantity;
     private Long productId;
 

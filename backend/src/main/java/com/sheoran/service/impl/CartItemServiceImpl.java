@@ -7,6 +7,8 @@ import com.sheoran.service.CartItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class CartItemServiceImpl implements CartItemService {
 
@@ -20,8 +22,8 @@ public class CartItemServiceImpl implements CartItemService {
         User cartItemUser=item.getCart().getUser();
         if (cartItemUser.getId().equals(userId)){
             item.setQuantity(cartItem.getQuantity());
-            item.setMrpPrice(item.getQuantity()*item.getProduct().getMrpPrice());
-            item.setSellingPrice(item.getQuantity()*item.getProduct().getSellingPrice());
+            item.setMrpPrice(item.getProduct().getMrpPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            item.setSellingPrice(item.getProduct().getSellingPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
             return cartItemRepo.save(item);
         }
         throw  new Exception("you can't update this cartItem");

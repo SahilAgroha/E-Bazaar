@@ -16,18 +16,22 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 
 @Service
+//@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-
     @Autowired
     private PaymentOrderRepo paymentOrderRepo;
+    @Autowired
     private OrderRepo orderRepo;
 
     @Value("${app.cors.allowed-origins}")
@@ -42,115 +46,163 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${app.stripe.secret-key}")
     private String stripeSecretKey;
 
-
-
     @Override
     public PaymentOrder createOrder(User user, Set<Order> orders) {
-        Long amount=orders.stream().mapToLong(Order::getTotalSellingPrice).sum();
 
-        PaymentOrder paymentOrder=new PaymentOrder();
+        BigDecimal amount = orders.stream()
+                .map(Order::getTotalSellingPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        PaymentOrder paymentOrder = new PaymentOrder();
         paymentOrder.setAmount(amount);
         paymentOrder.setUser(user);
         paymentOrder.setOrders(orders);
+        paymentOrder.setStatus(PaymentOrderStatus.PENDING);
+
         return paymentOrderRepo.save(paymentOrder);
     }
 
     @Override
     public PaymentOrder getPaymentOrderById(Long orderId) throws Exception {
-        return paymentOrderRepo.findById(orderId).orElseThrow(()->
-                new Exception("payment order not fount"));
+        return paymentOrderRepo.findById(orderId)
+                .orElseThrow(() -> new Exception("Payment order not found"));
     }
 
     @Override
-    public PaymentOrder getPaymentOrderByPaymentId(String orderId) throws Exception {
-        PaymentOrder paymentOrder=paymentOrderRepo.findByPaymentLinkId(orderId);
-        if (paymentOrder==null){
-            throw new Exception("payment order not found with provided payment link id");
+    public PaymentOrder getPaymentOrderByPaymentId(String paymentLinkId) throws Exception {
+
+        PaymentOrder paymentOrder =
+                paymentOrderRepo.findByPaymentLinkId(paymentLinkId);
+
+        if (paymentOrder == null) {
+            throw new Exception("Payment order not found");
         }
+
         return paymentOrder;
     }
 
     @Override
-    public Boolean proceedPaymentOrder(PaymentOrder paymentOrder, String paymentId, String paymentLinkId) throws RazorpayException {
-        if(paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING)){
-            RazorpayClient razorpayClient=new RazorpayClient(apiKey,apiSecret);
-            Payment payment=razorpayClient.payments.fetch(paymentId);
-            String status=payment.get("status");
-            if (status.equals("captured")){
-                Set<Order> orders=paymentOrder.getOrders();
-                for (Order order:orders){
-                    order.setPaymentStatus(PaymentStatus.COMPLETED);
-                    orderRepo.save(order);
-                }
-                paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
-                paymentOrderRepo.save(paymentOrder);
-                return true;
-            }
-            paymentOrder.setStatus(PaymentOrderStatus.FAILED);
-            paymentOrderRepo.save(paymentOrder);
+    public Boolean proceedPaymentOrder(
+            PaymentOrder paymentOrder,
+            String paymentId,
+            String paymentLinkId
+    ) throws RazorpayException {
+
+        if (!paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING)) {
             return false;
         }
+
+        RazorpayClient razorpayClient =
+                new RazorpayClient(apiKey, apiSecret);
+
+        Payment payment = razorpayClient.payments.fetch(paymentId);
+
+        String status = payment.get("status");
+
+        if ("captured".equals(status)) {
+
+            for (Order order : paymentOrder.getOrders()) {
+                order.setPaymentStatus(PaymentStatus.COMPLETED);
+                orderRepo.save(order);
+            }
+
+            paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
+            paymentOrderRepo.save(paymentOrder);
+
+            return true;
+        }
+
+        paymentOrder.setStatus(PaymentOrderStatus.FAILED);
+        paymentOrderRepo.save(paymentOrder);
+
         return false;
     }
 
     @Override
-    public PaymentLink createRazorpayPaymentLink(User user, Long amount, Long orderId) throws RazorpayException {
-        amount*=100;
-        try {
-            RazorpayClient razorpayClient=new RazorpayClient(apiKey,apiSecret);
+    public PaymentLink createRazorpayPaymentLink(
+            User user,
+            BigDecimal amount,
+            Long orderId
+    ) throws RazorpayException {
 
-            JSONObject paymentLinkRequest=new JSONObject();
-            paymentLinkRequest.put("amount",amount);
-            paymentLinkRequest.put("currency","INR");
+        RazorpayClient razorpayClient =
+                new RazorpayClient(apiKey, apiSecret);
 
-            JSONObject customer=new JSONObject();
-            customer.put("name",user.getFullName());
-            customer.put("email",user.getEmail());
-            paymentLinkRequest.put("customer",customer);
+        // Convert INR to paisa
+        long amountInPaisa = amount
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(0, RoundingMode.HALF_UP)
+                .longValue();
 
-            JSONObject notify=new JSONObject();
-            notify.put("email",true);
-            paymentLinkRequest.put("notify",notify);
+        JSONObject paymentLinkRequest = new JSONObject();
+        paymentLinkRequest.put("amount", amountInPaisa);
+        paymentLinkRequest.put("currency", "INR");
 
-            paymentLinkRequest.put("callback_url",allowedOrigins+"/payment-success/"+orderId);
-            paymentLinkRequest.put("callback_method","get");
+        JSONObject customer = new JSONObject();
+        customer.put("name", user.getFullName());
+        customer.put("email", user.getEmail());
 
-            PaymentLink paymentLink=razorpayClient.paymentLink.create(paymentLinkRequest);
+        paymentLinkRequest.put("customer", customer);
 
-            String paymentLinkUrl=paymentLink.get("short_url");
-            String paymentLinkId=paymentLink.get("id");
+        paymentLinkRequest.put(
+                "callback_url",
+                allowedOrigins + "/payment-success/" + orderId
+        );
 
-            return paymentLink;
+        paymentLinkRequest.put("callback_method", "get");
 
-        } catch (Exception e) {
-            throw new RazorpayException(e.getMessage());
-        }
-
+        return razorpayClient.paymentLink.create(paymentLinkRequest);
     }
 
     @Override
-    public String createStripePaymentLink(User user, Long amount, Long orderId) throws StripeException {
-        Stripe.apiKey=stripeSecretKey;
+    public String createStripePaymentLink(
+            User user,
+            BigDecimal amount,
+            Long orderId
+    ) throws StripeException {
 
-        SessionCreateParams params=SessionCreateParams.builder()
-                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(allowedOrigins+"/payment-success/"+orderId)
-                .setCancelUrl(allowedOrigins+"/payment-cancel/")
-                .addLineItem(SessionCreateParams.LineItem.builder()
-                        .setQuantity(1L)
-                        .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
-                                .setCurrency("usd")
-                                .setUnitAmount(amount*100)
-                                .setProductData(
-                                        SessionCreateParams.LineItem.PriceData.ProductData
-                                                .builder().setName("buyBaazar Payment")
-                                                .build()
-                                ).build()
-                        ).build()
-                ).build();
+        Stripe.apiKey = stripeSecretKey;
 
-        Session session= Session.create(params);
+        long amountInCents = amount
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(0, RoundingMode.HALF_UP)
+                .longValue();
+
+        SessionCreateParams params =
+                SessionCreateParams.builder()
+                        .addPaymentMethodType(
+                                SessionCreateParams.PaymentMethodType.CARD
+                        )
+                        .setMode(SessionCreateParams.Mode.PAYMENT)
+                        .setSuccessUrl(
+                                allowedOrigins + "/payment-success/" + orderId
+                        )
+                        .setCancelUrl(
+                                allowedOrigins + "/payment-cancel/"
+                        )
+                        .addLineItem(
+                                SessionCreateParams.LineItem.builder()
+                                        .setQuantity(1L)
+                                        .setPriceData(
+                                                SessionCreateParams.LineItem
+                                                        .PriceData.builder()
+                                                        .setCurrency("usd")
+                                                        .setUnitAmount(amountInCents)
+                                                        .setProductData(
+                                                                SessionCreateParams.LineItem
+                                                                        .PriceData.ProductData
+                                                                        .builder()
+                                                                        .setName("BuyBaazar Payment")
+                                                                        .build()
+                                                        )
+                                                        .build()
+                                        )
+                                        .build()
+                        )
+                        .build();
+
+        Session session = Session.create(params);
+
         return session.getUrl();
     }
 }

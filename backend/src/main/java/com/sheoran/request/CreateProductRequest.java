@@ -1,19 +1,21 @@
 package com.sheoran.request;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CreateProductRequest {
 
     private String title;
     private String description;
-    private int mrpPrice;
-    private int sellingPrice;
+    private BigDecimal mrpPrice;
+    private BigDecimal sellingPrice;
     private String color;
     private List<String> images;
     private String category;
     private String category2;
     private String category3;
     private String size;
+    private Integer quantity;
 
     public String getTitle() {
         return title;
@@ -31,19 +33,19 @@ public class CreateProductRequest {
         this.description = description;
     }
 
-    public int getMrpPrice() {
+    public BigDecimal getMrpPrice() {
         return mrpPrice;
     }
 
-    public void setMrpPrice(int mrpPrice) {
+    public void setMrpPrice(BigDecimal mrpPrice) {
         this.mrpPrice = mrpPrice;
     }
 
-    public int getSellingPrice() {
+    public BigDecimal getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(int sellingPrice) {
+    public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
 
@@ -93,5 +95,13 @@ public class CreateProductRequest {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

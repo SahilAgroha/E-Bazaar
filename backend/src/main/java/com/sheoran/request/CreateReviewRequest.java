@@ -2,11 +2,12 @@ package com.sheoran.request;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Data
 public class CreateReviewRequest {
     private String reviewText;
-    private double reviewRating;
+    private BigDecimal reviewRating;
     private List<String> productImages;
 
     public String getReviewText() {
@@ -17,11 +18,11 @@ public class CreateReviewRequest {
         this.reviewText = reviewText;
     }
 
-    public double getReviewRating() {
+    public BigDecimal getReviewRating() {
         return reviewRating;
     }
 
-    public void setReviewRating(double reviewRating) {
+    public void setReviewRating(BigDecimal reviewRating) {
         this.reviewRating = reviewRating;
     }
 

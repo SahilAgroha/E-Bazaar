@@ -5,9 +5,11 @@ import Deal from './Deal/Deal'
 import ShopByCategory from './ShopByCategory/ShopByCategory'
 import { Button } from '@mui/material'
 import { Storefront } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 // import Img from "../../../images/image.png"
 
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <>
     <div className='space-y-5 lg:space-y-10 relative pb-20'>
@@ -34,7 +36,7 @@ const Home = () => {
           <h1>Sell your Product</h1>
           <p className='text-lg md:text-2xl'>with <span className='logo'>Buy Baazar</span></p>
             <div className="pt-6 flex justify-center">
-              <Button variant='contained' startIcon={<Storefront/>} size='large'>
+              <Button variant='contained' startIcon={<Storefront/>} size='large' onClick={() => navigate("/become-seller")}>
                 Become Seller
               </Button>
             </div>

@@ -28,6 +28,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -94,6 +96,7 @@ public class AuthServiceImpl implements AuthService {
             VerificationCode verificationCode=new VerificationCode();
             verificationCode.setOtp(otp);
             verificationCode.setEmail(email);
+            verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(5));
             verificationCodeRepo.save(verificationCode);
 
             String subject="buyBaazar loginin/signup otp";
@@ -127,6 +130,11 @@ public class AuthServiceImpl implements AuthService {
 
             Cart cart=new Cart();
             cart.setUser(user);
+            cart.setTotalMrpPrice(BigDecimal.ZERO);
+            cart.setTotalSellingPrice(BigDecimal.ZERO);
+            cart.setTotalItem(0);
+            cart.setDiscount(0);
+
             cartRepo.save(cart);
         }
 
@@ -150,7 +158,6 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token=jwtProvider.generateToken(authentication);
-        System.out.println("jwt "+token);
 
         AuthResponse authResponse=new AuthResponse();
         authResponse.setJwt(token);
@@ -161,8 +168,6 @@ public class AuthServiceImpl implements AuthService {
 
 
         authResponse.setRole(USER_ROLE.valueOf(roleName));
-
-
 
         return authResponse;
     }
@@ -180,7 +185,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("invalid username");
         }
         VerificationCode verificationCode=verificationCodeRepo.findByEmail(username);
-        System.out.println("verification Code "+verificationCode);
 
         if (verificationCode==null || !verificationCode.getOtp().equals(otp)){
             throw new BadCredentialsException("wrong otp");

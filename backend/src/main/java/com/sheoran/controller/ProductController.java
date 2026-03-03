@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -47,7 +48,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") Integer pageNumber
             ){
         return new ResponseEntity<>(
-                productService.getAllProducts(category,brand,color,size,minPrice,maxPrice,
+                productService.getAllProducts(category,brand,color,size, BigDecimal.valueOf(minPrice),BigDecimal.valueOf(maxPrice),
                         minDiscount,sort,stock,pageNumber),HttpStatus.OK);
 
     }

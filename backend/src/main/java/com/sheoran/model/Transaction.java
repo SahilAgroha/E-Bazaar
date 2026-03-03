@@ -6,37 +6,32 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "transactions")
 @Getter
 @Setter
-
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
-    @OneToOne
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
 
-    private LocalDateTime date=LocalDateTime.now();
-
-    public Transaction(Long id, User customer, Order order, Seller seller, LocalDateTime date) {
-        this.id = id;
-        this.customer = customer;
-        this.order = order;
-        this.seller = seller;
-        this.date = date;
-    }
-
-    public Transaction() {
-    }
+    @Column(nullable = false)
+    private LocalDateTime date = LocalDateTime.now();
 
     public Long getId() {
         return id;

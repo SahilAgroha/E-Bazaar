@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth")    //     complete
 public class AuthController {
 
     @Autowired
@@ -27,7 +27,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/signup")
+    @PostMapping("/signup")   //    2
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignupRequest request) throws Exception {
 
         String jwt = authService.createUser(request);
@@ -41,7 +41,7 @@ public class AuthController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/sent/login-signup-otp")
+    @PostMapping("/sent/login-signup-otp")   //   1
     public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
 
         authService.sendLoginOtp(req.getEmail(),req.getRole());
@@ -55,13 +55,13 @@ public class AuthController {
 
     }
 
-    @PostMapping("/signing")
+    @PostMapping("/signing")    //  3
     public ResponseEntity<AuthResponse> loginHandler(@RequestBody LoginRequest request){
-        System.out.println("Controller  "+request);
+//        System.out.println("Controller  "+request);
 
         AuthResponse authResponse=authService.signing(request);
 
-        System.out.println("End of Controller");
+//        System.out.println("End of Controller");
         return ResponseEntity.ok(authResponse);
     }
 

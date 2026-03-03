@@ -5,6 +5,8 @@ import com.sheoran.domain.AccountStatus;
 import com.sheoran.domain.USER_ROLE;
 import com.sheoran.exceptions.SellerException;
 import com.sheoran.model.Address;
+import com.sheoran.model.BankDetails;
+import com.sheoran.model.BusinessDetails;
 import com.sheoran.model.Seller;
 import com.sheoran.repository.AddressRepo;
 import com.sheoran.repository.SellerRepo;
@@ -74,44 +76,115 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public List<Seller> getAllSellers(AccountStatus status) {
+        if (status == null) {
+            return sellerRepo.findAll();
+        }
         return sellerRepo.findByAccountStatus(status);
     }
 
     @Override
     public Seller updateSeller(Long id, Seller seller) throws Exception {
-        Seller existSeller=this.getSellerById(id);
-        if(seller.getSellerName()!=null){
+
+        Seller existSeller = this.getSellerById(id);
+
+        // Basic fields
+        if (seller.getSellerName() != null) {
             existSeller.setSellerName(seller.getSellerName());
         }
-        if (seller.getMobile()!=null){
+
+        if (seller.getMobile() != null) {
             existSeller.setMobile(seller.getMobile());
         }
-        if (seller.getEmail()!=null){
+
+        if (seller.getEmail() != null) {
             existSeller.setEmail(seller.getEmail());
         }
-        if (seller.getBusinessDetails()!=null && seller.getBusinessDetails().getBusinessName()!=null){
-            existSeller.getBusinessDetails().setBusinessName(seller.getBusinessDetails().getBusinessName());
-        }
-        if (seller.getBankDetails()!=null && seller.getBankDetails().getAccountHolderName()!=null
-            && seller.getBankDetails().getIfscCode()!=null && seller.getBankDetails().getAccountNumber()!=null){
 
-            existSeller.getBankDetails().setAccountHolderName(seller.getBankDetails().getAccountHolderName());
-            existSeller.getBankDetails().setIfscCode(seller.getBankDetails().getIfscCode());
-            existSeller.getBankDetails().setAccountNumber(seller.getBankDetails().getAccountNumber());
-        }
-        if (seller.getPickupAddress()!=null && seller.getPickupAddress().getAddress()!=null
-            && seller.getPickupAddress().getMobile()!=null && seller.getPickupAddress().getCity()!=null
-            && seller.getPickupAddress().getState()!=null){
-
-            existSeller.getPickupAddress().setAddress(seller.getPickupAddress().getAddress());
-            existSeller.getPickupAddress().setMobile(seller.getPickupAddress().getMobile());
-            existSeller.getPickupAddress().setCity(seller.getPickupAddress().getCity());
-            existSeller.getPickupAddress().setState(seller.getPickupAddress().getState());
-            existSeller.getPickupAddress().setPinCode(seller.getPickupAddress().getPinCode());
-        }
-        if (seller.getGSTIN()!=null){
+        if (seller.getGSTIN() != null) {
             existSeller.setGSTIN(seller.getGSTIN());
         }
+
+        // =========================
+        // BUSINESS DETAILS UPDATE
+        // =========================
+        if (seller.getBusinessDetails() != null) {
+
+            if (existSeller.getBusinessDetails() == null) {
+                existSeller.setBusinessDetails(new BusinessDetails());
+            }
+
+            BusinessDetails existing = existSeller.getBusinessDetails();
+            BusinessDetails incoming = seller.getBusinessDetails();
+
+            if (incoming.getBusinessName() != null)
+                existing.setBusinessName(incoming.getBusinessName());
+
+            if (incoming.getBusinessEmail() != null)
+                existing.setBusinessEmail(incoming.getBusinessEmail());
+
+            if (incoming.getBusinessMobile() != null)
+                existing.setBusinessMobile(incoming.getBusinessMobile());
+
+            if (incoming.getBusinessAddress() != null)
+                existing.setBusinessAddress(incoming.getBusinessAddress());
+
+            if (incoming.getLogo() != null)
+                existing.setLogo(incoming.getLogo());
+
+            if (incoming.getBanner() != null)
+                existing.setBanner(incoming.getBanner());
+        }
+
+        // =========================
+        // BANK DETAILS UPDATE
+        // =========================
+        if (seller.getBankDetails() != null) {
+
+            if (existSeller.getBankDetails() == null) {
+                existSeller.setBankDetails(new BankDetails());
+            }
+
+            BankDetails existingBank = existSeller.getBankDetails();
+            BankDetails incomingBank = seller.getBankDetails();
+
+            if (incomingBank.getAccountHolderName() != null)
+                existingBank.setAccountHolderName(incomingBank.getAccountHolderName());
+
+            if (incomingBank.getIfscCode() != null)
+                existingBank.setIfscCode(incomingBank.getIfscCode());
+
+            if (incomingBank.getAccountNumber() != null)
+                existingBank.setAccountNumber(incomingBank.getAccountNumber());
+        }
+
+        // =========================
+        // PICKUP ADDRESS UPDATE
+        // =========================
+        if (seller.getPickupAddress() != null) {
+
+            if (existSeller.getPickupAddress() == null) {
+                existSeller.setPickupAddress(new Address());
+            }
+
+            Address existingAddress = existSeller.getPickupAddress();
+            Address incomingAddress = seller.getPickupAddress();
+
+            if (incomingAddress.getAddress() != null)
+                existingAddress.setAddress(incomingAddress.getAddress());
+
+            if (incomingAddress.getMobile() != null)
+                existingAddress.setMobile(incomingAddress.getMobile());
+
+            if (incomingAddress.getCity() != null)
+                existingAddress.setCity(incomingAddress.getCity());
+
+            if (incomingAddress.getState() != null)
+                existingAddress.setState(incomingAddress.getState());
+
+            if (incomingAddress.getPinCode() != null)
+                existingAddress.setPinCode(incomingAddress.getPinCode());
+        }
+
         return sellerRepo.save(existSeller);
     }
 

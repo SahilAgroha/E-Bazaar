@@ -13,7 +13,7 @@ export const sendLoginSignupOtp=createAsyncThunk("/auth/sendLoginSignupOtp",
             // console.log("login otp  - - ",response);
             
         } catch (error) {
-            // console.log("error - - - ",error);
+            console.log("error - - - ",error);
             
         }
     }
@@ -24,7 +24,7 @@ export const signin=createAsyncThunk<any,any>("/auth/signin",
     async(loginRequest,{rejectWithValue})=>{
         try {
             const response =await api.post("auth/signing",loginRequest) 
-            // console.log("Signing  - - ",response);
+            console.log("Signing  - - ",response);
             localStorage.setItem('jwt',response.data.jwt)
             return response.data
         } catch (error) {
@@ -50,22 +50,30 @@ export const signup=createAsyncThunk<any,any>("/auth/signup",
 )
 
 // impl
-export const fetchUserProfile=createAsyncThunk<any,any>("/auth/fetchUserProfile",
-    async({jwt},{rejectWithValue})=>{
-        try {
-            const response =await api.get("/api/users/profile",{
-                headers:{
-                    Authorization:`Bearer ${jwt}`
-                }
-            }) 
-            console.log("User profile  - - ",response.data);
-            return response.data
-        } catch (error) {
-            // console.log("error - - - ",error);
-            
-        }
+export const fetchUserProfile = createAsyncThunk<any, any>(
+  "/auth/fetchUserProfile",
+  async ({ jwt }, { rejectWithValue }) => {
+    try {
+      if (!jwt) {
+        return rejectWithValue("JWT token missing");
+      }
+
+      const cleanToken = jwt.trim().replace(/^"|"$/g, "");
+
+      const response = await api.get("/users/profile", {
+        headers: {
+          Authorization: `Bearer ${cleanToken}`,
+        },
+      });
+
+      console.log("User profile - - ", response.data);
+      return response.data;
+
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
     }
-)
+  }
+);
 
 //impl
 export const logout=createAsyncThunk<any,any>('/auth/logout',

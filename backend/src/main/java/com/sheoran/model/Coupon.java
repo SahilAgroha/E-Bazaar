@@ -3,36 +3,43 @@ package com.sheoran.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "coupons")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor
 public class Coupon {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String code;
 
-    private double discountPercentage;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal discountPercentage;
 
+    @Column(nullable = false)
     private LocalDate validityStartDate;
 
+    @Column(nullable = false)
     private LocalDate validityEndDate;
 
-    private double minimumOrderValue;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal minimumOrderValue;
 
-    private boolean isActive=true;
+    @Column(nullable = false)
+    private boolean active = true;
 
     @ManyToMany(mappedBy = "usedCoupons")
-    private Set<User> usedByUsers=new HashSet<>();
+    private Set<User> usedByUsers = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -50,11 +57,11 @@ public class Coupon {
         this.code = code;
     }
 
-    public double getDiscountPercentage() {
+    public BigDecimal getDiscountPercentage() {
         return discountPercentage;
     }
 
-    public void setDiscountPercentage(double discountPercentage) {
+    public void setDiscountPercentage(BigDecimal discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
 
@@ -74,20 +81,20 @@ public class Coupon {
         this.validityEndDate = validityEndDate;
     }
 
-    public double getMinimumOrderValue() {
+    public BigDecimal getMinimumOrderValue() {
         return minimumOrderValue;
     }
 
-    public void setMinimumOrderValue(double minimumOrderValue) {
+    public void setMinimumOrderValue(BigDecimal minimumOrderValue) {
         this.minimumOrderValue = minimumOrderValue;
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
     public Set<User> getUsedByUsers() {

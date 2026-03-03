@@ -3,35 +3,47 @@ package com.sheoran.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
+@Table(name = "seller_reports")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class SellerReport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
 
-    private Long totalEarning=0L;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalEarning = BigDecimal.ZERO;
 
-    private Long totalSales=0L;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalSales = BigDecimal.ZERO;
 
-    private Long totalRefunds=0L;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalRefunds = BigDecimal.ZERO;
 
-    private Long totalTax=0L;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalTax = BigDecimal.ZERO;
 
-    private Long netEarning=0L;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal netEarning = BigDecimal.ZERO;
 
-    private Integer totalOrders=0;
+    @Column(nullable = false)
+    private Integer totalOrders = 0;
 
-    private Integer cancelOrders=0;
+    @Column(nullable = false)
+    private Integer cancelOrders = 0;
 
-    private Integer totalTransactions=0;
+    @Column(nullable = false)
+    private Integer totalTransactions = 0;
 
     public Long getId() {
         return id;
@@ -49,43 +61,43 @@ public class SellerReport {
         this.seller = seller;
     }
 
-    public Long getTotalEarning() {
+    public BigDecimal getTotalEarning() {
         return totalEarning;
     }
 
-    public void setTotalEarning(Long totalEarning) {
+    public void setTotalEarning(BigDecimal totalEarning) {
         this.totalEarning = totalEarning;
     }
 
-    public Long getTotalSales() {
+    public BigDecimal getTotalSales() {
         return totalSales;
     }
 
-    public void setTotalSales(Long totalSales) {
+    public void setTotalSales(BigDecimal totalSales) {
         this.totalSales = totalSales;
     }
 
-    public Long getTotalRefunds() {
+    public BigDecimal getTotalRefunds() {
         return totalRefunds;
     }
 
-    public void setTotalRefunds(Long totalRefunds) {
+    public void setTotalRefunds(BigDecimal totalRefunds) {
         this.totalRefunds = totalRefunds;
     }
 
-    public Long getTotalTax() {
+    public BigDecimal getTotalTax() {
         return totalTax;
     }
 
-    public void setTotalTax(Long totalTax) {
+    public void setTotalTax(BigDecimal totalTax) {
         this.totalTax = totalTax;
     }
 
-    public Long getNetEarning() {
+    public BigDecimal getNetEarning() {
         return netEarning;
     }
 
-    public void setNetEarning(Long netEarning) {
+    public void setNetEarning(BigDecimal netEarning) {
         this.netEarning = netEarning;
     }
 

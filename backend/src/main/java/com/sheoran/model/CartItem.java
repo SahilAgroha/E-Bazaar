@@ -4,34 +4,39 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
+@Table(name = "cart_items")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor
 public class CartItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cart_id", nullable = false)
     @JsonIgnore
     private Cart cart;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     private String size;
 
-    private int quantity =1;
+    @Column(nullable = false)
+    private int quantity = 1;
 
-    private Integer mrpPrice;
+    @Column(nullable = false)
+    private BigDecimal mrpPrice;
 
-    private Integer sellingPrice;
-
-    private Long userId;
+    @Column(nullable = false)
+    private BigDecimal sellingPrice;
 
     public Long getId() {
         return id;
@@ -73,27 +78,19 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    public Integer getMrpPrice() {
+    public BigDecimal getMrpPrice() {
         return mrpPrice;
     }
 
-    public void setMrpPrice(Integer mrpPrice) {
+    public void setMrpPrice(BigDecimal mrpPrice) {
         this.mrpPrice = mrpPrice;
     }
 
-    public Integer getSellingPrice() {
+    public BigDecimal getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(Integer sellingPrice) {
+    public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 }

@@ -24,7 +24,7 @@ public class SellerProductController {
     @Autowired
     private SellerService sellerService;
 
-    @GetMapping()
+    @GetMapping()  //    2
     public ResponseEntity<List<Product>> getProductBySeller(@RequestHeader("Authorization") String jwt) throws Exception {
         Seller seller=sellerService.getSellerProfile(jwt);
 
@@ -32,7 +32,7 @@ public class SellerProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping()    //    1
     public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest request,
                                                  @RequestHeader("Authorization") String jwt) throws Exception {
 
@@ -42,7 +42,7 @@ public class SellerProductController {
         return new ResponseEntity<>(product,HttpStatus.OK);
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/{productId}")   //   3
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId){
         try{
             productService.deleteProduct(productId);
@@ -52,7 +52,7 @@ public class SellerProductController {
         }
     }
 
-    @PutMapping("/{productId}")
+    @PutMapping("/{productId}")  //  4
     public ResponseEntity<Product> updateProduct(@PathVariable Long productId,
                                                  @RequestBody Product product) throws ProductException {
 

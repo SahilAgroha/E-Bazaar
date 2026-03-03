@@ -11,7 +11,6 @@ spring:
       ddl-auto: ${JPA_DDL:update}
     show-sql: ${JPA_SHOW_SQL:false}
     # Specify PostgreSQL dialect for Hibernate
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   mail:
     host: smtp.gmail.com

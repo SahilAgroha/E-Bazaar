@@ -7,6 +7,7 @@ import com.sheoran.request.CreateProductRequest;
 import org.springframework.data.domain.Page;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductService {
@@ -21,8 +22,8 @@ public interface ProductService {
             String brand,
             String colors,
             String size,
-            Integer minPrice,
-            Integer maxPrice,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
             Integer minDiscount,
             String sort,
             String stock,

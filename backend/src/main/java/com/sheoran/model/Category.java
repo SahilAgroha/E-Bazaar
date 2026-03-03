@@ -1,32 +1,41 @@
 package com.sheoran.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
+@Table(name = "categories")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @NotNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String categoryId;
 
-    @ManyToOne
-    private Category patentCategory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Category parentCategory;
 
     @NotNull
+    @Column(nullable = false)
     private Integer level;
+
+    public void setPatentCategory(Category level1) {
+
+    }
 
     public Long getId() {
         return id;
@@ -52,12 +61,12 @@ public class Category {
         this.categoryId = categoryId;
     }
 
-    public Category getPatentCategory() {
-        return patentCategory;
+    public Category getParentCategory() {
+        return parentCategory;
     }
 
-    public void setPatentCategory(Category patentCategory) {
-        this.patentCategory = patentCategory;
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
     }
 
     public @NotNull Integer getLevel() {
@@ -66,5 +75,16 @@ public class Category {
 
     public void setLevel(@NotNull Integer level) {
         this.level = level;
+    }
+
+    public Category(Long id, String name, String categoryId, Category parentCategory, Integer level) {
+        this.id = id;
+        this.name = name;
+        this.categoryId = categoryId;
+        this.parentCategory = parentCategory;
+        this.level = level;
+    }
+
+    public Category() {
     }
 }

@@ -3,31 +3,36 @@ package com.sheoran.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "carts")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<CartItem> cartItems=new HashSet<>();
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> cartItems = new HashSet<>();
 
-    private  double totalSellingPrice;
+    @Column(nullable = false)
+    private BigDecimal totalSellingPrice;
+
+    @Column(nullable = false)
+    private BigDecimal totalMrpPrice;
 
     private int totalItem;
-
-    private int totalMrpPrice;
 
     private int discount;
 
@@ -57,12 +62,20 @@ public class Cart {
         this.cartItems = cartItems;
     }
 
-    public double getTotalSellingPrice() {
+    public BigDecimal getTotalSellingPrice() {
         return totalSellingPrice;
     }
 
-    public void setTotalSellingPrice(double totalSellingPrice) {
+    public void setTotalSellingPrice(BigDecimal totalSellingPrice) {
         this.totalSellingPrice = totalSellingPrice;
+    }
+
+    public BigDecimal getTotalMrpPrice() {
+        return totalMrpPrice;
+    }
+
+    public void setTotalMrpPrice(BigDecimal totalMrpPrice) {
+        this.totalMrpPrice = totalMrpPrice;
     }
 
     public int getTotalItem() {
@@ -71,14 +84,6 @@ public class Cart {
 
     public void setTotalItem(int totalItem) {
         this.totalItem = totalItem;
-    }
-
-    public int getTotalMrpPrice() {
-        return totalMrpPrice;
-    }
-
-    public void setTotalMrpPrice(int totalMrpPrice) {
-        this.totalMrpPrice = totalMrpPrice;
     }
 
     public int getDiscount() {

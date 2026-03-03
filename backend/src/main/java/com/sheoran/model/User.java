@@ -10,34 +10,46 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-     private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String fullName;
 
     private String mobile;
 
-    private USER_ROLE role=USER_ROLE.ROLE_CUSTOMER;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private USER_ROLE role = USER_ROLE.ROLE_CUSTOMER;
 
-    @OneToMany
-    private Set<Address> addresses=new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id") // creates FK in address table
+    private Set<Address> addresses = new HashSet<>();
 
     @ManyToMany
+    @JoinTable(
+            name = "user_used_coupons",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "coupon_id")
+    )
     @JsonIgnore
-    private Set<Coupon> usedCoupons=new HashSet<>();
+    private Set<Coupon> usedCoupons = new HashSet<>();
 
     public Long getId() {
         return id;

@@ -1,16 +1,26 @@
 package com.sheoran.model;
 
 import com.sheoran.domain.PaymentStatus;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Embeddable
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentDetails {
 
     private String paymentId;
+
     private String razorpayPaymentLinkId;
+
     private String razorpayPaymentLinkReferenceId;
+
     private String razorpayPaymentLinkStatus;
-    private String razorpayPaymentIdZWSP;
+
+    private String razorpayPaymentId;
+
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     public String getPaymentId() {
@@ -45,12 +55,12 @@ public class PaymentDetails {
         this.razorpayPaymentLinkStatus = razorpayPaymentLinkStatus;
     }
 
-    public String getRazorpayPaymentIdZWSP() {
-        return razorpayPaymentIdZWSP;
+    public String getRazorpayPaymentId() {
+        return razorpayPaymentId;
     }
 
-    public void setRazorpayPaymentIdZWSP(String razorpayPaymentIdZWSP) {
-        this.razorpayPaymentIdZWSP = razorpayPaymentIdZWSP;
+    public void setRazorpayPaymentId(String razorpayPaymentId) {
+        this.razorpayPaymentId = razorpayPaymentId;
     }
 
     public PaymentStatus getStatus() {
@@ -58,18 +68,6 @@ public class PaymentDetails {
     }
 
     public void setStatus(PaymentStatus status) {
-        this.status = status;
-    }
-
-    public PaymentDetails() {
-    }
-
-    public PaymentDetails(String paymentId, String razorpayPaymentLinkId, String razorpayPaymentLinkReferenceId, String razorpayPaymentLinkStatus, String razorpayPaymentIdZWSP, PaymentStatus status) {
-        this.paymentId = paymentId;
-        this.razorpayPaymentLinkId = razorpayPaymentLinkId;
-        this.razorpayPaymentLinkReferenceId = razorpayPaymentLinkReferenceId;
-        this.razorpayPaymentLinkStatus = razorpayPaymentLinkStatus;
-        this.razorpayPaymentIdZWSP = razorpayPaymentIdZWSP;
         this.status = status;
     }
 }

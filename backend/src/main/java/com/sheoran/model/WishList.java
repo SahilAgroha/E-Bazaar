@@ -7,28 +7,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "wishlists")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class WishList {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @ManyToMany
-    private Set<Product> products=new HashSet<>();
-
-    public WishList(Long id, User user, Set<Product> products) {
-        this.id = id;
-        this.user = user;
-        this.products = products;
-    }
-
-    public WishList() {
-    }
+    @JoinTable(
+            name = "wishlist_products",
+            joinColumns = @JoinColumn(name = "wishlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products = new HashSet<>();
 
     public Long getId() {
         return id;

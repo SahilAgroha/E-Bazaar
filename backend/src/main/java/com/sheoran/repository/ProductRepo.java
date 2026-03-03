@@ -12,10 +12,19 @@ public interface ProductRepo extends JpaRepository<Product,Long> , JpaSpecificat
 
     List<Product> findBySellerId(Long id);
 
-    @Query("SELECT p FROM Product p WHERE (:query is null or lower(p.title) "+
-        "LIKE lower(concat('%', :query,'%')))"+
-        "or (:query is null or lower(p.category.name)"+
-        "like lower(concat('%', :query ,'%')))")
+//    @Query("SELECT p FROM Product p WHERE (:query is null or lower(p.title) "+
+//        "LIKE lower(concat('%', :query,'%')))"+
+//        "or (:query is null or lower(p.category.name)"+
+//        "like lower(concat('%', :query ,'%')))")
+//    List<Product> searchProduct(@Param("query") String query);
+    @Query("""
+        SELECT p FROM Product p
+        JOIN p.category c
+        WHERE (:query IS NULL OR
+               LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%'))
+               OR
+               LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))
+        )
+    """)
     List<Product> searchProduct(@Param("query") String query);
-
 }

@@ -4,28 +4,24 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "deals")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class Deal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Integer discount;
 
-    @OneToOne
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "home_category_id", nullable = false, unique = true)
     private HomeCategory category;
-
-    public Deal(Long id, Integer discount, HomeCategory category) {
-        this.id = id;
-        this.discount = discount;
-        this.category = category;
-    }
-
-    public Deal() {
-    }
 
     public Long getId() {
         return id;

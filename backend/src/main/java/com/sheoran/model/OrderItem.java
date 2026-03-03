@@ -4,32 +4,40 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
+@Table(name = "order_items")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class OrderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     private String size;
 
+    @Column(nullable = false)
     private int quantity;
 
-    private Integer mrpPrice;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal mrpPrice;
 
-    private Integer sellingPrice;
-
-    private Long userId;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal sellingPrice;
 
     public Long getId() {
         return id;
@@ -71,41 +79,19 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public Integer getMrpPrice() {
+    public BigDecimal getMrpPrice() {
         return mrpPrice;
     }
 
-    public void setMrpPrice(Integer mrpPrice) {
+    public void setMrpPrice(BigDecimal mrpPrice) {
         this.mrpPrice = mrpPrice;
     }
 
-    public Integer getSellingPrice() {
+    public BigDecimal getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(Integer sellingPrice) {
+    public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public OrderItem() {
-    }
-
-    public OrderItem(Long id, Order order, Product product, String size, int quantity, Integer mrpPrice, Integer sellingPrice, Long userId) {
-        this.id = id;
-        this.order = order;
-        this.product = product;
-        this.size = size;
-        this.quantity = quantity;
-        this.mrpPrice = mrpPrice;
-        this.sellingPrice = sellingPrice;
-        this.userId = userId;
     }
 }

@@ -4,51 +4,49 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "reviews")
 @Getter
 @Setter
-
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String reviewText;
 
-    @Column(nullable = false)
-    private double rating;
+    @Column(nullable = false, precision = 2, scale = 1)
+    private BigDecimal rating;
 
     @ElementCollection
-    private List<String> productImages;
+    @CollectionTable(
+            name = "review_images",
+            joinColumns = @JoinColumn(name = "review_id")
+    )
+    @Column(name = "image_url")
+    private List<String> productImages = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt=LocalDateTime.now();
-
-    public Review(Long id, String reviewText, double rating, List<String> productImages, Product product, User user, LocalDateTime createdAt) {
-        this.id = id;
-        this.reviewText = reviewText;
-        this.rating = rating;
-        this.productImages = productImages;
-        this.product = product;
-        this.user = user;
-        this.createdAt = createdAt;
-    }
-
-    public Review() {
-    }
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {
         return id;
@@ -66,11 +64,11 @@ public class Review {
         this.reviewText = reviewText;
     }
 
-    public double getRating() {
+    public BigDecimal getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(BigDecimal rating) {
         this.rating = rating;
     }
 

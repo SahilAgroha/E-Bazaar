@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,43 +22,57 @@ import java.util.List;
 
 public class JwtTokenValidator extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenValidator.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(JwtTokenValidator.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader("Authorization");
-        logger.debug("JwtTokenValidator: Authorization header: {}", jwt);
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        if (jwt != null && jwt.startsWith("Bearer ") && jwt.length() > 7) {
-            String token = jwt.substring(7);
-            try {
-                SecretKey key = Keys.hmacShaKeyFor(JWT_CONSTANT.SECRET_KEY.getBytes());
-                Claims claims = Jwts.parser()
-                        .verifyWith(key)
-                        .build()
-                        .parseSignedClaims(token)
-                        .getPayload();
+        String header = request.getHeader("Authorization");
 
-                String email = String.valueOf(claims.get("email"));
-                String authorities = String.valueOf(claims.get("authorities"));
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-                logger.debug("Parsed JWT claims - email: {}, authorities: {}", email, authorities);
+        String token = header.substring(7).trim(); // 🔥 IMPORTANT
 
-                List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, auths);
+        if (token.isBlank()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            SecretKey key =
+                    Keys.hmacShaKeyFor(JWT_CONSTANT.SECRET_KEY.getBytes());
 
-                logger.debug("Authentication set in SecurityContextHolder for user: {}", email);
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-            } catch (Exception e) {
-                logger.error("Invalid JWT token: {}", e.getMessage());
-                throw new BadCredentialsException("Invalid JWT token....");
-            }
-        } else {
-            logger.debug("No JWT token found in request or token does not start with Bearer");
+            String email = claims.get("email", String.class);
+            String authorities = claims.get("authorities", String.class);
+
+            List<GrantedAuthority> auths =
+                    AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
+
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(email, null, auths);
+
+            SecurityContextHolder.getContext()
+                    .setAuthentication(authentication);
+
+        } catch (Exception e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+
+            // 🔥 DO NOT THROW EXCEPTION
+            // Just clear context and continue
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/payment")
 public class PaymentController {
@@ -43,8 +45,8 @@ public class PaymentController {
                 transactionService.createTransaction(order);
                 SellerReport report=sellerReportService.getSellerReport(seller);
                 report.setTotalOrders(report.getTotalOrders()+1);
-                report.setTotalEarning(report.getTotalEarning()+order.getTotalSellingPrice());
-                report.setTotalSales(report.getTotalSales()+order.getOrderItems().size());
+                report.setTotalEarning(report.getTotalEarning().add(order.getTotalSellingPrice()));
+                report.setTotalSales(report.getTotalSales().add(BigDecimal.valueOf(order.getOrderItems().size())));
                 sellerReportService.updateSellerReport(report);
             }
 

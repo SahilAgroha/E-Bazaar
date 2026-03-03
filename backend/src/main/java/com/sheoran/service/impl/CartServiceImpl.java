@@ -11,10 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
     @Autowired
@@ -22,25 +23,33 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartItemRepo cartItemRepo;
 
-
     @Override
     public CartItem addCartItem(User user, Product product, String size, int quantity) {
-        Cart cart=cartRepo.findByUserId(user.getId());
-        CartItem isPresent=cartItemRepo.findByCartAndProductAndSize(cart,product,size);
 
-        if (isPresent==null){
-            CartItem cartItem=new CartItem();
+        Cart cart = cartRepo.findByUserId(user.getId());
+        CartItem isPresent =
+                cartItemRepo.findByCartAndProductAndSize(cart, product, size);
+
+        if (isPresent == null) {
+
+            CartItem cartItem = new CartItem();
             cartItem.setProduct(product);
             cartItem.setQuantity(quantity);
-            cartItem.setUserId(user.getId());
             cartItem.setSize(size);
+            cartItem.setCart(cart);
 
-            int totalPrice=quantity*product.getSellingPrice();
-            cartItem.setSellingPrice(totalPrice);
-            cartItem.setMrpPrice(quantity*product.getMrpPrice());
+            BigDecimal qty = BigDecimal.valueOf(quantity);
+
+            cartItem.setSellingPrice(
+                    product.getSellingPrice().multiply(qty)
+            );
+
+            cartItem.setMrpPrice(
+                    product.getMrpPrice().multiply(qty)
+            );
 
             cart.getCartItems().add(cartItem);
-            cartItem.setCart(cart);
+
             return cartItemRepo.save(cartItem);
         }
 
@@ -48,40 +57,47 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart findUserCart(User user) throws IllegalAccessException {
-        Cart cart=cartRepo.findByUserId(user.getId());
-//        if (cart == null) {
-//            cart = new Cart();
-//            cart.setUser(user);
-//            cart.setCartItems(new HashSet<>()); // make sure to initialize the set
-//            cart = cartRepo.save(cart);
-//        }
+    public Cart findUserCart(User user) {
 
-        int totalPrice=0;
-        int totalDiscountedPrice=0;
-        int totalItem=0;
+        Cart cart = cartRepo.findByUserId(user.getId());
 
-        for (CartItem cartItem: cart.getCartItems()){
-            totalPrice+=cartItem.getMrpPrice();
-            totalDiscountedPrice+=cartItem.getSellingPrice();
-            totalItem+=cartItem.getQuantity();
+        BigDecimal totalMrpPrice = BigDecimal.ZERO;
+        BigDecimal totalSellingPrice = BigDecimal.ZERO;
+        int totalItem = 0;
+
+        for (CartItem cartItem : cart.getCartItems()) {
+
+            totalMrpPrice = totalMrpPrice.add(cartItem.getMrpPrice());
+            totalSellingPrice = totalSellingPrice.add(cartItem.getSellingPrice());
+            totalItem += cartItem.getQuantity();
         }
 
-        cart.setTotalMrpPrice(totalPrice);
-        cart.setTotalSellingPrice(totalDiscountedPrice);
+        cart.setTotalMrpPrice(totalMrpPrice);
+        cart.setTotalSellingPrice(totalSellingPrice);
         cart.setTotalItem(totalItem);
-        cart.setDiscount(calculateDiscountPercentage(totalPrice,totalDiscountedPrice));
 
+        cart.setDiscount(
+                calculateDiscountPercentage(totalMrpPrice, totalSellingPrice)
+        );
 
         return cart;
     }
 
-    private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) throws IllegalAccessException {
-        if(mrpPrice<=0){
+    private int calculateDiscountPercentage(
+            BigDecimal mrpPrice,
+            BigDecimal sellingPrice
+    ) {
+
+        if (mrpPrice.compareTo(BigDecimal.ZERO) <= 0) {
             return 0;
         }
-        double discount =mrpPrice-sellingPrice;
-        double discountPercentage=(discount/mrpPrice)*100;
-        return (int)discountPercentage;
+
+        BigDecimal discount = mrpPrice.subtract(sellingPrice);
+
+        BigDecimal percentage = discount
+                .divide(mrpPrice, 2, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+
+        return percentage.intValue();
     }
 }

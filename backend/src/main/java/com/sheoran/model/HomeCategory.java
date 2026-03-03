@@ -1,37 +1,33 @@
 package com.sheoran.model;
 
 import com.sheoran.domain.HomeCategorySection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "home_categories")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class HomeCategory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
     private String image;
+
+    @Column(nullable = false)
     private String categoryId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private HomeCategorySection section;
-
-    public HomeCategory(Long id, String name, String image, String categoryId, HomeCategorySection section) {
-        this.id = id;
-        this.name = name;
-        this.image = image;
-        this.categoryId = categoryId;
-        this.section = section;
-    }
-
-    public HomeCategory() {
-    }
 
     public Long getId() {
         return id;
@@ -73,4 +69,3 @@ public class HomeCategory {
         this.section = section;
     }
 }
-
