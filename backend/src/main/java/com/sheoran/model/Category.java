@@ -9,8 +9,6 @@ import lombok.*;
 @Table(name = "categories")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
 
