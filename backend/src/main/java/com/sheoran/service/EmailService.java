@@ -19,17 +19,18 @@ public class EmailService {
 
     public void sendVerificationOtpEmail(String userEmail,String otp,String subject,String text) throws MessagingException {
 
-        try {
-            MimeMessage mimeMessage=javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper= new MimeMessageHelper(mimeMessage,"utf-8");
-            mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(text);
-            mimeMessageHelper.setTo(userEmail);
-            javaMailSender.send(mimeMessage);
-
-        } catch (MailException e) {
-            throw new MailSendException("failed to send email");
-        }
+        System.out.println("\n\n\n\n\nOTP : "+otp+"\n\n\n");
+//        try {
+//            MimeMessage mimeMessage=javaMailSender.createMimeMessage();
+//            MimeMessageHelper mimeMessageHelper= new MimeMessageHelper(mimeMessage,"utf-8");
+//            mimeMessageHelper.setSubject(subject);
+//            mimeMessageHelper.setText(text);
+//            mimeMessageHelper.setTo(userEmail);
+//            javaMailSender.send(mimeMessage);
+//
+//        } catch (MailException e) {
+//            throw new MailSendException("failed to send email");
+//        }
     }
 
 }

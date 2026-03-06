@@ -12,3 +12,13 @@ spring:
       fail-on-empty-beans: false
 server:
   port: 8080 # Matches your pattern
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.mail: DEBUG
+    org.springframework.boot.autoconfigure.mail: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.zaxxer.hikari: DEBUG
