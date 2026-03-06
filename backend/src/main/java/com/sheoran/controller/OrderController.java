@@ -33,7 +33,7 @@ public class OrderController {
     @Autowired
     private PaymentOrderRepo paymentOrderRepo;
 
-    @PostMapping()
+    @PostMapping()   //   1
     public ResponseEntity<PaymentLinkResponse> createOrderHandler(@RequestBody Address shippingAddress,
                                                                   @RequestParam PaymentMethod paymentMethod,
                                                                   @RequestHeader("Authorization") String jwt) throws Exception {
@@ -41,7 +41,7 @@ public class OrderController {
         Cart cart=cartService.findUserCart(user);
         Set<Order> orders=orderService.createOrder(user,shippingAddress,cart);
 
-        PaymentOrder paymentOrder=paymentService.createOrder(user,orders);
+        PaymentOrder paymentOrder=paymentService.createOrder(user,orders,paymentMethod);
 
         PaymentLinkResponse response=new PaymentLinkResponse();
 
@@ -53,6 +53,9 @@ public class OrderController {
 
             response.setPayment_link_url(paymentUrl);
             response.setPayment_link_id(paymentUrlId);
+
+            paymentOrder.setPaymentLinkId(paymentUrlId);
+
             paymentOrderRepo.save(paymentOrder);
         } else {
             String paymentUrl=paymentService.createStripePaymentLink(user,paymentOrder.getAmount(),paymentOrder.getId());
@@ -62,28 +65,28 @@ public class OrderController {
 
     }
 
-    @GetMapping("/user")
+    @GetMapping("/user")   //  2
     private ResponseEntity<List<Order>> userOrderHistoryHandler(@RequestHeader("Authorization") String jwt) throws Exception {
         User user=userService.findUserByJwtToken(jwt);
         List<Order> orders=orderService.usersOrderHistory(user.getId());
         return new ResponseEntity<>(orders,HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/{orderId}")
+    @GetMapping("/{orderId}") // 3
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId,@RequestHeader("Authorization") String jwt) throws Exception {
         User user=userService.findUserByJwtToken(jwt);
         Order order=orderService.findOrderById(orderId);
         return new ResponseEntity<>(order,HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/item/{orderItemId}")
-    public ResponseEntity<OrderItem> getOrderItemById(@PathVariable Long orderId,@RequestHeader("Authorization") String jwt) throws Exception {
+    @GetMapping("/item/{orderItemId}")   //  4
+    public ResponseEntity<OrderItem> getOrderItemById(@PathVariable Long orderItemId,@RequestHeader("Authorization") String jwt) throws Exception {
         User user=userService.findUserByJwtToken(jwt);
-        OrderItem orderItem=orderService.getOrderItemById(orderId);
+        OrderItem orderItem=orderService.getOrderItemById(orderItemId);
         return new ResponseEntity<>(orderItem,HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/{orderId}/cancel")
+    @PutMapping("/{orderId}/cancel")  //   5
     public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId,@RequestHeader("Authorization") String jwt) throws Exception {
         User user=userService.findUserByJwtToken(jwt);
         Order order=orderService.cancelOrder(orderId,user);

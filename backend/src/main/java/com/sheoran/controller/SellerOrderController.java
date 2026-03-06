@@ -21,14 +21,14 @@ public class SellerOrderController {
     @Autowired
     private SellerService sellerService;
 
-    @GetMapping()
+    @GetMapping()   //   1
     public ResponseEntity<List<Order>> getAllOrdersHandler(@RequestHeader("Authorization") String jwt) throws Exception {
         Seller seller=sellerService.getSellerProfile(jwt);
         List<Order> orders=orderService.sellerOrder(seller.getId());
         return new ResponseEntity<>(orders, HttpStatus.ACCEPTED);
     }
 
-    @PatchMapping("/{orderId}/status/{orderStatus}")
+    @PatchMapping("/{orderId}/status/{orderStatus}")    //    2
     public ResponseEntity<Order> updateOrderHandler(@RequestHeader("Authorization") String jwt,
                                                     @PathVariable Long orderId,
                                                     @PathVariable OrderStatus orderStatus) throws Exception {

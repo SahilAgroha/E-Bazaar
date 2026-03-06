@@ -25,7 +25,7 @@ public class AdminCouponController {
     @Autowired
     private CartService cartService;
 
-    @PostMapping("/apply")
+    @PostMapping("/apply")   //   4
     public ResponseEntity<Cart> applyCoupon(@RequestParam String apply,
                                             @RequestParam String code,
                                             @RequestParam double orderValue,
@@ -40,19 +40,19 @@ public class AdminCouponController {
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
-    @PostMapping("/admin/create")
+    @PostMapping("/admin/create")   // 1
     public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon){
         Coupon createdCoupon=couponService.createCoupon(coupon);
         return new ResponseEntity<>(createdCoupon,HttpStatus.CREATED);
     }
 
-    @DeleteMapping("admin/delete/{id}")
+    @DeleteMapping("admin/delete/{id}")   //  2
     public ResponseEntity<?> deleteCoupon(@PathVariable Long id) throws Exception {
         couponService.deleteCoupon(id);
         return new ResponseEntity<>("Coupon deleted successfully",HttpStatus.OK);
     }
 
-    @GetMapping("/admin/all")
+    @GetMapping("/admin/all")   //   3
     public ResponseEntity<List<Coupon>> getAllCoupon(){
         List<Coupon> coupons=couponService.findAllCoupon();
         return new ResponseEntity<>(coupons,HttpStatus.OK);

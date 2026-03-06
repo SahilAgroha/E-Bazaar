@@ -17,7 +17,7 @@ public class AdminController {
     @Autowired
     private SellerService sellerService;
 
-    @PatchMapping("/seller/{id}/status/{status}")
+    @PatchMapping("/seller/{id}/status/{status}")   //   1
     public ResponseEntity<Seller> updateSellerStatus(@PathVariable Long id,
                                                      @PathVariable AccountStatus status) throws Exception {
         Seller updatedSeller=sellerService.updateSellerAccountStatus(id, status);

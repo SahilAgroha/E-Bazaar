@@ -68,4 +68,15 @@ public class HomeCategory {
     public void setSection(HomeCategorySection section) {
         this.section = section;
     }
+
+    @Override
+    public String toString() {
+        return "HomeCategory{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", image='" + image + '\'' +
+                ", categoryId='" + categoryId + '\'' +
+                ", section=" + section +
+                '}';
+    }
 }

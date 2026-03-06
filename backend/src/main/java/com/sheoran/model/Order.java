@@ -1,5 +1,6 @@
 package com.sheoran.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sheoran.domain.OrderStatus;
 import com.sheoran.domain.PaymentStatus;
 import jakarta.persistence.*;
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
     @Id

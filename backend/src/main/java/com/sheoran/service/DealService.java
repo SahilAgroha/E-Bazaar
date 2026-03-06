@@ -9,4 +9,6 @@ public interface DealService {
     Deal createDeal(Deal deal);
     Deal updateDeal(Deal deal,Long id) throws Exception;
     void deleteDeal(Long id) throws Exception;
+
+    List<Deal> getAllDeals();
 }

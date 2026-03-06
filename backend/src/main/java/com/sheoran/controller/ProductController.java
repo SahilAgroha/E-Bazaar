@@ -22,19 +22,19 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/{productId}")
+    @GetMapping("/{productId}")   // 3
     public ResponseEntity<Product> getProductById(@PathVariable Long productId) throws ProductException {
         Product product=productService.findProductById(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search")    //  2
     public ResponseEntity<List<Product>> searchProduct(@RequestParam(required = false) String query){
         List<Product> products=productService.searchProducts(query);
         return new ResponseEntity<>(products,HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping   //   1
     public ResponseEntity<Page<Product>> getAllProducts(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String brand,
@@ -47,8 +47,22 @@ public class ProductController {
             @RequestParam(required = false) String stock,
             @RequestParam(defaultValue = "0") Integer pageNumber
             ){
+
+        System.out.println("Categoty "+category);
+        System.out.println("Brand "+brand);
+        System.out.println("Color "+color);
+        System.out.println("Size "+size);
+        System.out.println("Min Price "+minPrice);
+        System.out.println("Max Price "+maxPrice);
+        System.out.println("minDiscount "+minDiscount);
+        System.out.println("Sort "+sort);
+        System.out.println("Stock "+stock);
+        System.out.println("Page Number "+pageNumber);
+
+        BigDecimal min = minPrice != null ? BigDecimal.valueOf(minPrice) : null;
+        BigDecimal max = maxPrice != null ? BigDecimal.valueOf(maxPrice) : null;
         return new ResponseEntity<>(
-                productService.getAllProducts(category,brand,color,size, BigDecimal.valueOf(minPrice),BigDecimal.valueOf(maxPrice),
+                productService.getAllProducts(category,brand,color,size, min,max,
                         minDiscount,sort,stock,pageNumber),HttpStatus.OK);
 
     }

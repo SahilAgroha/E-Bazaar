@@ -3,6 +3,12 @@ spring:
     name: Buy-Baazar
   profiles:
     active: dev # Change this to 'prod' for Render deployment
-
+  jackson:
+    # Fail on unknown properties during deserialization
+    deserialization:
+      fail-on-unknown-properties: false
+    # Other common settings
+    serialization:
+      fail-on-empty-beans: false
 server:
   port: 8080 # Matches your pattern

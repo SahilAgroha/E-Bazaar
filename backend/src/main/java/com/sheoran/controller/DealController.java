@@ -8,28 +8,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/deals")
 public class DealController {
+
     @Autowired
     private DealService dealService;
 
-    @PostMapping
+    // ✅ GET ALL DEALS
+    @GetMapping    //   1
+    public ResponseEntity<List<Deal>> getAllDeals(){
+        List<Deal> deals = dealService.getAllDeals();
+        return new ResponseEntity<>(deals, HttpStatus.OK);
+    }
+
+    // ✅ CREATE DEAL
+    @PostMapping   //    2
     public ResponseEntity<Deal> createDeals(@RequestBody Deal deal){
-        Deal createdDeal=dealService.createDeal(deal);
+        Deal createdDeal = dealService.createDeal(deal);
         return new ResponseEntity<>(createdDeal, HttpStatus.ACCEPTED);
     }
 
-    @PatchMapping("/{id}")
+    // ✅ UPDATE DEAL
+    @PatchMapping("/{id}")   //    3
     public ResponseEntity<Deal> updateDeal(@PathVariable Long id,
                                            @RequestBody Deal deal) throws Exception {
-        Deal updatedDeal=dealService.updateDeal(deal,id);
+
+        Deal updatedDeal = dealService.updateDeal(deal,id);
         return new ResponseEntity<>(updatedDeal,HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteDeal(@PathVariable Long id){
-        ApiResponse apiResponse=new ApiResponse();
+    // ✅ DELETE DEAL
+    @DeleteMapping("/{id}")   //   4
+    public ResponseEntity<ApiResponse> deleteDeal(@PathVariable Long id) throws Exception {
+        dealService.deleteDeal(id); // ⚠️ you forgot to call service
+        ApiResponse apiResponse = new ApiResponse();
         apiResponse.setMessage("Deal deleted");
 
         return new ResponseEntity<>(apiResponse,HttpStatus.ACCEPTED);

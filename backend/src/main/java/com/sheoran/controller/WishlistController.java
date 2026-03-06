@@ -22,14 +22,14 @@ public class WishlistController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping()
+    @GetMapping()   //  1
     public ResponseEntity<WishList> getWishlistByUserId(@RequestHeader("Authorization") String jwt) throws Exception {
         User user=userService.findUserByJwtToken(jwt);
         WishList wishList=wishlistService.getWishlistByUserId(user);
         return new ResponseEntity<>(wishList, HttpStatus.OK);
     }
 
-    @PostMapping("/add-product/{productId}")
+    @PostMapping("/add-product/{productId}")   //   2
     public ResponseEntity<WishList> addProductToWishList(@PathVariable Long productId,
                                                          @RequestHeader("Authorization") String jwt) throws Exception {
         Product product = productService.findProductById(productId);

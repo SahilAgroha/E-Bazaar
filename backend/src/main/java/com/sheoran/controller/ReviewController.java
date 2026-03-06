@@ -25,13 +25,13 @@ public class ReviewController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("products/{productId}/reviews")
+    @GetMapping("products/{productId}/reviews")    //     3
     public ResponseEntity<List<Review>> getReviewByProductId(@PathVariable Long productId){
         List<Review> reviews=reviewService.getReviewByProductId(productId);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
-    @PostMapping("/products/{productId}/reviews")
+    @PostMapping("/products/{productId}/reviews")  //   1
     public ResponseEntity<Review> writeReview(@PathVariable Long productId,
                                               @RequestBody CreateReviewRequest request,
                                               @RequestHeader("Authorization") String jwt) throws Exception {
@@ -41,7 +41,7 @@ public class ReviewController {
         return new ResponseEntity<>(review,HttpStatus.OK);
     }
 
-    @PatchMapping("/reviews/{reviewId}")
+    @PatchMapping("/reviews/{reviewId}")    //    2
     public ResponseEntity<Review> updateReview(@RequestHeader("Authorization") String jwt,
                                                @PathVariable Long reviewId,
                                                @RequestBody CreateReviewRequest request) throws Exception {
@@ -52,7 +52,7 @@ public class ReviewController {
         return new ResponseEntity<>(review,HttpStatus.OK);
     }
 
-    @DeleteMapping("/reviews/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")   //    4
     public ResponseEntity<ApiResponse> deleteReview(@PathVariable Long reviewId,
                                                     @RequestHeader("Authorization") String jwt) throws Exception {
         User user =userService.findUserByJwtToken(jwt);

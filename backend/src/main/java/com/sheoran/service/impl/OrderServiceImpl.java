@@ -28,11 +28,21 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Set<Order> createOrder(User user, Address shippingAddress, Cart cart) {
 
-        if (!user.getAddresses().contains(shippingAddress)) {
-            user.getAddresses().add(shippingAddress);
-        }
+//        if (!user.getAddresses().contains(shippingAddress)) {
+//            user.getAddresses().add(shippingAddress);
+//        }
 
-        Address savedAddress = addressRepo.save(shippingAddress);
+        Address savedAddress;
+
+        if (shippingAddress.getId() != null) {
+            // Existing address → fetch from DB
+            savedAddress = addressRepo.findById(shippingAddress.getId())
+                    .orElseThrow(() -> new RuntimeException("Address not found"));
+        } else {
+            // New address → save
+            savedAddress = addressRepo.save(shippingAddress);
+            user.getAddresses().add(savedAddress);
+        }
 
         Map<Long, List<CartItem>> itemsBySeller =
                 cart.getCartItems().stream()

@@ -56,4 +56,15 @@ public class Home {
     public void setDeals(List<Deal> deals) {
         this.deals = deals;
     }
+
+    @Override
+    public String toString() {
+        return "Home{" +
+                "grid=" + grid +
+                ", shopByCategories=" + shopByCategories +
+                ", electricCategories=" + electricCategories +
+                ", dealCategories=" + dealCategories +
+                ", deals=" + deals +
+                '}';
+    }
 }

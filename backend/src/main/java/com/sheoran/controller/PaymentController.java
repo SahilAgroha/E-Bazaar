@@ -28,12 +28,13 @@ public class PaymentController {
     @Autowired
     private TransactionService transactionService;
 
-    @GetMapping("/{paymentId}")
+    @GetMapping("/{paymentId}")    //  1
     public ResponseEntity<ApiResponse> paymentSuccessHandler(@PathVariable String paymentId,
                                                              @RequestParam String paymentLinkId,
                                                              @RequestHeader("Authorization") String jwt) throws Exception {
+        System.out.println("\n\nPaymentId : "+paymentId+"\nPaymentLinkId : "+paymentLinkId);
         User user=userService.findUserByJwtToken(jwt);
-
+        System.out.println("User : "+user);
         PaymentLinkResponse paymentLinkResponse;
         PaymentOrder paymentOrder=paymentService.getPaymentOrderByPaymentId(paymentLinkId);
 

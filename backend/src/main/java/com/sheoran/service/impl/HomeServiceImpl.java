@@ -40,18 +40,15 @@ public class HomeServiceImpl implements HomeService {
         List<Deal> createDeals;
 
         if (dealRepo.findAll().isEmpty()) {
-
             List<Deal> deals = dealCategories.stream()
                     .map(category -> {
                         Deal deal = new Deal();
                         deal.setDiscount(10);
                         deal.setCategory(category);
                         return deal;
-                    })
-                    .collect(Collectors.toList());
+                    }).toList();
 
             createDeals = dealRepo.saveAll(deals);
-
         } else {
             createDeals = dealRepo.findAll();
         }
@@ -60,6 +57,7 @@ public class HomeServiceImpl implements HomeService {
         home.setGrid(gridCategories);
         home.setElectricCategories(electricCategories);
         home.setShopByCategories(shopByCategories);
+        home.setDealCategories(dealCategories); // ⭐ IMPORTANT FIX
         home.setDeals(createDeals);
 
         return home;

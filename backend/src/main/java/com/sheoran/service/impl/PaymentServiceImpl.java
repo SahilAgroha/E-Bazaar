@@ -4,6 +4,7 @@ import com.razorpay.Payment;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.sheoran.domain.PaymentMethod;
 import com.sheoran.domain.PaymentOrderStatus;
 import com.sheoran.domain.PaymentStatus;
 import com.sheoran.model.Order;
@@ -16,7 +17,6 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
-import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
     private String stripeSecretKey;
 
     @Override
-    public PaymentOrder createOrder(User user, Set<Order> orders) {
+    public PaymentOrder createOrder(User user, Set<Order> orders, PaymentMethod paymentMethod) {
 
         BigDecimal amount = orders.stream()
                 .map(Order::getTotalSellingPrice)
@@ -57,6 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentOrder.setAmount(amount);
         paymentOrder.setUser(user);
         paymentOrder.setOrders(orders);
+        paymentOrder.setPaymentMethod(paymentMethod);
         paymentOrder.setStatus(PaymentOrderStatus.PENDING);
 
         return paymentOrderRepo.save(paymentOrder);

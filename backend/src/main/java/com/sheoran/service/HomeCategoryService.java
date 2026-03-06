@@ -9,4 +9,6 @@ public interface HomeCategoryService {
     List<HomeCategory> createHomeCategories(List<HomeCategory> categories);
     HomeCategory updateHomeCategory(HomeCategory homeCategory,Long id) throws Exception;
     List<HomeCategory> getAllHomeCategories();
+
+    void deleteHomeCategory(Long id) throws Exception;
 }

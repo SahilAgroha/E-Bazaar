@@ -23,7 +23,7 @@ public class TransactionController {
     @Autowired
     private SellerService sellerService;
 
-    @GetMapping("/seller")
+    @GetMapping("/seller") // 1
     public ResponseEntity<List<Transaction>> getTransactionBySeller(@RequestHeader("Authorization") String jwt) throws Exception {
         Seller seller=sellerService.getSellerProfile(jwt);
 
@@ -31,7 +31,7 @@ public class TransactionController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping()  //   2
     public ResponseEntity<List<Transaction>> getAllTransaction(){
         List<Transaction> transactions=transactionService.getAllTransaction();
         return new ResponseEntity<>(transactions,HttpStatus.OK);

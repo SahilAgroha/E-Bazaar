@@ -207,13 +207,14 @@ public class ProductServiceImpl implements ProductService {
 
                     List<Predicate> predicates = new ArrayList<>();
 
-                    if (category != null) {
-                        Join<Product, Category> join =
-                                root.join("category");
-                        predicates.add(
-                                cb.equal(join.get("categoryId"), category)
-                        );
-                    }
+                    //  Don't filter based on category now
+//                    if (category != null) {
+//                        Join<Product, Category> join =
+//                                root.join("category");
+//                        predicates.add(
+//                                cb.equal(join.get("categoryId"), category)
+//                        );
+//                    }
 
                     if (colors != null) {
                         predicates.add(

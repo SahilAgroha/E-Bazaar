@@ -53,4 +53,9 @@ public class DealServiceImpl implements DealService {
                 new Exception("deal not found"));
         dealRepo.delete(deal);
     }
+
+    @Override
+    public List<Deal> getAllDeals() {
+        return dealRepo.findAll();
+    }
 }
