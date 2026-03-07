@@ -10,8 +10,7 @@ spring:
     # Other common settings
     serialization:
       fail-on-empty-beans: false
-server:
-  port: 8080 # Matches your pattern
+
 
 logging:
   level:
