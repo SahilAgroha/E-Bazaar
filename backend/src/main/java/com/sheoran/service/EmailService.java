@@ -35,6 +35,9 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
         } catch (MailException e) {
+            System.out.println("❌ EMAIL ERROR START");
+            e.printStackTrace();
+            System.out.println("❌ EMAIL ERROR END");
             throw new MailSendException("failed to send email");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
