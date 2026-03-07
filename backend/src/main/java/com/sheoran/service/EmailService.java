@@ -27,6 +27,7 @@ public class EmailService {
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(text,true);
             mimeMessageHelper.setTo(userEmail);
+            System.out.println("Before Email Send in Email Service");
             javaMailSender.send(mimeMessage);
 
         } catch (MailException e) {

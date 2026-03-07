@@ -85,14 +85,18 @@ public class AuthServiceImpl implements AuthService {
         if (isExist != null) {
             verificationCodeRepo.delete(isExist);
         }
-
+        System.out.println("Before Otp generate");
         String otp = OtpUtil.generateOtp();
+        System.out.println("After Otp generate : "+otp);
 
         VerificationCode verificationCode = new VerificationCode();
         verificationCode.setOtp(otp);
         verificationCode.setEmail(email);
         verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        System.out.println("Before VerificationCode Save");
         verificationCodeRepo.save(verificationCode);
+        System.out.println("After Verifaction Code Save");
+
 
         String subject = "Your buyBaazar Verification Code";
 
@@ -113,8 +117,10 @@ public class AuthServiceImpl implements AuthService {
                 "</div>" +
                 "</body>" +
                 "</html>";
-
+        System.out.println("Before Email send  Email : "+email+"  Otp "+otp);
         emailService.sendVerificationOtpEmail(email, otp, subject, htmlText);
+        System.out.println("After Email send ");
+
     }
 
     @Override

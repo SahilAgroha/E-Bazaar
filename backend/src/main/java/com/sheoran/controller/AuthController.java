@@ -44,6 +44,8 @@ public class AuthController {
     @PostMapping("/sent/login-signup-otp")   //   1
     public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
 
+        System.out.println("\n\n\nEmail : "+req.getEmail());
+
         authService.sendLoginOtp(req.getEmail(),req.getRole());
 
         ApiResponse response = new ApiResponse();
