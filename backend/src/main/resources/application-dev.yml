@@ -11,19 +11,26 @@ spring:
       ddl-auto: ${JPA_DDL:update}
     show-sql: ${JPA_SHOW_SQL:false}
 
-
- # Email configuration for local/dev testing
   mail:
-    host: smtp.gmail.com
+    host: smtp.sendgrid.net
     port: 587
     username: ${MAIL_USER}
     password: ${MAIL_PASS}
     properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+ # Email configuration for local/dev testing
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: ${MAIL_USER}
+#    password: ${MAIL_PASS}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
 
 app:
   cors:

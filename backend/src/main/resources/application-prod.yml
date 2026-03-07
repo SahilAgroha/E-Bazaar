@@ -14,19 +14,27 @@ spring:
 
 
   mail:
-    host: smtp.gmail.com
+    host: smtp.sendgrid.net
     port: 587
     username: ${MAIL_USER}
     password: ${MAIL_PASS}
     properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: ${MAIL_USER}
+#    password: ${MAIL_PASS}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#          connectiontimeout: 5000
+#          timeout: 5000
+#          writetimeout: 5000
 
 app:
   cors:
