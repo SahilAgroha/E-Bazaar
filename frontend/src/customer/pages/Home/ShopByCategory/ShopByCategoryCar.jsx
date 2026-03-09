@@ -1,6 +1,6 @@
 import React from 'react'
 import './ShopByCategory.css'
-const ShopByCategoryCard = ({item}) => {
+const ShopByCategoryCar = ({item}) => {
   return (
     <div className='flex gap-3 flex-col justify-center items-center group cursor-pointer'>
         <div className='custome-border w-[150px] h-[150px] lg:w-[249px] lg:h-[249px] rounded-full bg-[#00927c]'>
@@ -13,4 +13,4 @@ const ShopByCategoryCard = ({item}) => {
   )
 }
 
-export default ShopByCategoryCard
+export default ShopByCategoryCar
