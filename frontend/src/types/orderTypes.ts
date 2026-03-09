@@ -8,7 +8,7 @@ export interface OrderState{
     paymentOrder : any | null;
     loading:boolean;
     error:string | null;
-    orderCancled:boolean;
+    orderCanceled:boolean;
 }
 
 export interface Order{

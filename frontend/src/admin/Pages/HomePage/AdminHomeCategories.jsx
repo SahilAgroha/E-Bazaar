@@ -19,7 +19,8 @@ const AdminHomeCategories = () => {
     }
   }, [dispatch, jwt]);
 
-  console.log("Combined categories:", homePageData);
+  console.log("======Deals:", homePageData?.deals);
+  
 
   const categories = [
     ...(homePageData?.grid || []),
@@ -27,6 +28,7 @@ const AdminHomeCategories = () => {
     ...(homePageData?.electricCategories || []),
     ...(homePageData?.dealCategories || []),
   ];
+  console.log("Combined categories array:", categories);
 
   if (loading) return <p>Loading...</p>;
 

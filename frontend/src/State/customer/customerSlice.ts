@@ -24,7 +24,7 @@ export const fetchHomePageData = createAsyncThunk<HomeData, { jwt?: string }>(
         "/admin/home-category",
         jwt ? { headers: { Authorization: `Bearer ${jwt}` } } : undefined
       );
-      console.log("Fetched homedata :", res.data);
+      console.log("Fetched homedata : ", res.data);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(

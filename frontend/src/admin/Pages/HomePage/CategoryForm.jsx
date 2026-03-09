@@ -17,6 +17,7 @@ const CategoryForm = ({ editingCategory, setEditingCategory }) => {
 
   const [imageUrl, setImageUrl] = useState(editingCategory?.image || "");
   const [uploading, setUploading] = useState(false);
+  console.log("Editing category in form:", editingCategory);
 
   // 🔑 Flatten categories into different levels
   const { level1, level2, level3, all } = useMemo(() => {
@@ -68,6 +69,7 @@ const CategoryForm = ({ editingCategory, setEditingCategory }) => {
           .unwrap()
           .then(() => dispatch(fetchHomePageData({ jwt })));
       } else {
+        console.log("Creating home category with values:", homeCategory);
         dispatch(createHomeCategories({ homeCategories: [homeCategory], jwt }))
           .unwrap()
           .then(() => dispatch(fetchHomePageData({ jwt })));

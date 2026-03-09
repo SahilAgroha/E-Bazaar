@@ -1,4 +1,15 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  Divider,
+  Paper
+} from "@mui/material";
 import { useFormik } from "formik";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../../State/Store";
@@ -11,58 +22,118 @@ const EditDealForm = ({ deal, onClose }) => {
   const formik = useFormik({
     initialValues: {
       discount: deal.discount || 0,
-      category: deal.category?.id || ""
+      category: deal.category?.id || "",
     },
-    enableReinitialize: true, // ✅ important so it reloads if deal changes
+    enableReinitialize: true,
     onSubmit: (values) => {
-      const reqData = {
-        id: deal.id,
-        discount: Number(values.discount),
-        category: { id: values.category }
-      };
-      dispatch(updateDeal(reqData));
-      onClose(); // close edit mode after update
-    }
+      dispatch(
+        updateDeal({
+          id: deal.id,
+          deal: {
+            discount: Number(values.discount),
+            category: { id: values.category },
+          },
+        })
+      );
+      onClose();
+    },
   });
 
   return (
-    <Box component="form" onSubmit={formik.handleSubmit} className="space-y-6">
-      <Typography variant="h5" className="text-center">
-        Edit Deal
+    <Paper
+      elevation={3}
+      sx={{
+        p: 4,
+        borderRadius: 3,
+        background: "linear-gradient(to right, #f8fafc, #eef2f7)",
+      }}
+    >
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        textAlign="center"
+        gutterBottom
+      >
+        ✨ Edit Deal Details
       </Typography>
 
-      <TextField
-        fullWidth
-        type="number"
-        name="discount"
-        label="Discount"
-        value={formik.values.discount}
-        onChange={formik.handleChange}
-      />
+      <Divider sx={{ mb: 3 }} />
 
-      <FormControl fullWidth>
-        <InputLabel id="category-select-label">Category</InputLabel>
-        <Select
-          labelId="category-select-label"
-          name="category"
-          value={formik.values.category}
+      <Box component="form" onSubmit={formik.handleSubmit}>
+        {/* Discount */}
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+          Discount Percentage
+        </Typography>
+        <TextField
+          fullWidth
+          type="number"
+          name="discount"
+          placeholder="Enter discount"
+          value={formik.values.discount}
           onChange={formik.handleChange}
-        >
-          {customer.homePageData?.dealCategories?.map((item) => (
-            <MenuItem key={item.id} value={item.id}>
-              {item.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          sx={{
+            mb: 4, // ✅ SPACE ADDED
+            backgroundColor: "white",
+            borderRadius: 2,
+          }}
+          InputProps={{
+            endAdornment: <Typography sx={{ ml: 1 }}>%</Typography>,
+          }}
+        />
 
-      <Button fullWidth sx={{ py: ".9rem" }} type="submit" variant="contained">
-        Save Changes
-      </Button>
-      <Button fullWidth sx={{ py: ".9rem" }} onClick={onClose} variant="outlined">
-        Cancel
-      </Button>
-    </Box>
+        {/* Category */}
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+          Deal Category
+        </Typography>
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel>Select Category</InputLabel>
+          <Select
+            name="category"
+            value={formik.values.category}
+            onChange={formik.handleChange}
+            sx={{ backgroundColor: "white", borderRadius: 2 }}
+          >
+            {customer.homePageData?.dealCategories?.map((item) => (
+              <MenuItem key={item.id} value={item.id}>
+                {item.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Buttons */}
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              py: 1.2,
+              fontWeight: "bold",
+              borderRadius: 2,
+              background: "linear-gradient(45deg, #00b09b, #96c93d)",
+            }}
+          >
+            💾 Save Changes
+          </Button>
+
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            fullWidth
+            sx={{
+              py: 1.2,
+              fontWeight: "bold",
+              borderRadius: 2,
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 

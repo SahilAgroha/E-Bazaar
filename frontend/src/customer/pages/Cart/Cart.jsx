@@ -77,6 +77,7 @@ const Cart = () => {
                         </div>
                         {coupon?.couponApplied ? (
                             <div className='flex justify-center items-center'>
+                                
                                 <TextField
                                     id='outlined-basic'
                                     placeholder='coupon code'

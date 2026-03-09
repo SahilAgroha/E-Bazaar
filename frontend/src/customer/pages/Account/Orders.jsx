@@ -7,8 +7,11 @@ const Orders = () => {
   const dispatch=useAppDispatch();
   const {order}=useAppSelector(store=>store);
 
+  console.log("order history  ",order)
+
   useEffect(()=>{
     dispatch(fetchUserOrderHistory(localStorage.getItem('jwt') || ''))
+    console.log("fetching order history",order)
   },[])
 
 

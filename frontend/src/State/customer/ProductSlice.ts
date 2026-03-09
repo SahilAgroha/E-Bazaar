@@ -40,26 +40,27 @@ export const searchProduct=createAsyncThunk('products/searchProduct',
     }
 )
 
-export const fetchAllProduct = createAsyncThunk<any, any>(
-  'products/fetchAllProduct',
-  async (params, { rejectWithValue }) => {
+export const fetchAllProduct = createAsyncThunk(
+  "products/fetchAllProduct",
+  async (params: any, { rejectWithValue }) => {
     try {
-      // Ensure params is always an object
-      const safeParams = (params && typeof params === 'object') ? params : {};
 
-      const response = await api.get(`${API_URL}`, {   // impl
-        params: {
-          ...safeParams,
-          pageNumber: safeParams.pageNumber || 0
-        }
+      const cleanedParams = Object.fromEntries(
+        Object.entries(params || {}).filter(([_, v]) => v !== undefined && v !== "")
+      );
+
+      const response = await api.get("/products", {
+        params: cleanedParams
       });
 
-      const data = response.data;
-      console.log('Product details data - - - ', data);
-      return data;
+      console.log("API RESPONSE  :", response.data);
+      console.log("PARAMS SENT:", cleanedParams);
+
+      return response.data;
+
     } catch (error: any) {
-      console.log('error - - - ', error);
-      return rejectWithValue(error?.message || 'Something went wrong');
+      console.log("API ERROR:", error);
+      return rejectWithValue(error?.response?.data || error.message);
     }
   }
 );
@@ -105,7 +106,9 @@ interface ProductState{
         });
         builder.addCase(fetchAllProduct.fulfilled,(state,action)=>{
             state.loading=false;
-            state.products=action.payload.content
+            state.products = action.payload.content
+            state.totalPages = action.payload.totalPages
+            console.log("Products received:", action.payload.content);
         });
         builder.addCase(fetchAllProduct.rejected,(state,action)=>{
             state.loading=false;

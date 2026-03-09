@@ -22,7 +22,7 @@ const Account = () => {
   const location=useLocation()
   const dispatch=useAppDispatch();
   const {auth}=useAppSelector(store=>store)
-  console.log('auth in account ',auth)
+  console.log('auth in account  ',auth)
   
 
   const handleClick=(item)=>{
@@ -39,7 +39,6 @@ const Account = () => {
       <Divider/>
       <div className="grid grid-cols-1 lg:grid-cols-3 lg:min-h-[78vh]">
         <section className="col-span-1 lg:border-r lg:pr-5 py-5 h-full">
-          {console.log('menu -- ',menu)}
           {
             menu.map((item)=>(
               <div key={item.name} onClick={()=>handleClick(item)}

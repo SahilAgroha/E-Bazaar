@@ -11,7 +11,7 @@ const initialState: OrderState = {
     paymentOrder: null,
     loading: false,
     error: null,
-    orderCancled: false,
+    orderCanceled: false,
 };
 
 const API_URL = '/api/orders'
@@ -48,20 +48,20 @@ export const fetchOrderById = createAsyncThunk<Order, { orderId: number, jwt: st
     }
 );
 
-export const createOrder = createAsyncThunk<any, { address: Address, jwt: string, paymentGateway: string }>('orders/createOrder',
-    async ({ address, jwt, paymentGateway }, { rejectWithValue }) => {
-        try {
-            const response = await api.post(`${API_URL}`, address, {   // impl
-                headers: { Authorization: `Bearer ${jwt}` },
-                params: { paymentMethod: paymentGateway }
-            });
-
-            console.log("order created ", response.data);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response.data.error || "Faild to create Order");
-        }
+export const createOrder = createAsyncThunk(
+  "order/createOrder",
+  async ({ address, jwt, paymentMethod }: any, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/orders?paymentMethod=${paymentMethod}`,
+        address,
+        { headers: { Authorization: `Bearer ${jwt}` } }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error?.response?.data || error.message);
     }
+  }
 );
 
 export const fetchOrderItemById = createAsyncThunk<OrderItem, { orderItemId: number, jwt: string }>('orders/fetchOrderItemById',
@@ -93,21 +93,39 @@ export const paymentSuccess = createAsyncThunk<any, { paymentId: string, jwt: st
     }
 );
 
-export const cancleOrder = createAsyncThunk<Order, any>('orders/cancleOrder',
-    async (orderId, { rejectWithValue }) => {
-        try {
-            const response = await api.put(`${API_URL}/${orderId}/cancel`, {}, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-                },
-            });
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response.data.error || "An error occurred while canclling the order.");
+// export const cancelOrder = createAsyncThunk<Order, any>('orders/cancelOrder',
+//     async (orderId, { rejectWithValue }) => {
+//         try {
+//             const response = await api.put(`${API_URL}/${orderId}/cancel`, {}, {
+//                 headers: {
+//                     Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+//                 },
+//             });
+//             return response.data;
+//         } catch (error) {
+//             return rejectWithValue(error.response.data.error || "An error occurred while canclling the order.");
+//         }
+//     }
+// );
+export const cancelOrder = createAsyncThunk<Order,{ orderId: number; jwt: string }>(
+  "orders/cancelOrder",
+  async ({ orderId, jwt }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `${API_URL}/${orderId}/cancel`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${jwt}` },
         }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.error || "Failed to cancel order"
+      );
     }
+  }
 );
-
 const orderSlice = createSlice({
     name: "orders",
     initialState,
@@ -120,7 +138,7 @@ const orderSlice = createSlice({
         builder.addCase(fetchUserOrderHistory.pending, (state) => {
             state.loading = true;
             state.error = null;
-            state.orderCancled = false;
+            state.orderCanceled = false;
         })
             .addCase(fetchUserOrderHistory.fulfilled, (state, action) => {
                 state.loading = false;
@@ -180,20 +198,20 @@ const orderSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             });
-        builder.addCase(cancleOrder.pending, (state) => {
+        builder.addCase(cancelOrder.pending, (state) => {
             state.loading = true;
             state.error = null;
-            state.orderCancled = false;
+            state.orderCanceled = false;
         })
-            .addCase(cancleOrder.fulfilled, (state, action) => {
+            .addCase(cancelOrder.fulfilled, (state, action) => {
                 state.loading = false;
                 state.orders = state.orders.map((order) =>
                     order.id === action.payload.id ? action.payload : order
                 );
-                state.orderCancled = true;
+                state.orderCanceled = true;
                 state.currentOrder = action.payload;
             })
-            .addCase(cancleOrder.rejected, (state, action) => {
+            .addCase(cancelOrder.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

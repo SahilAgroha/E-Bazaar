@@ -7,9 +7,8 @@ import { updateCartItem, deleteCartItem } from '../../../State/customer/cartSlic
 const CartItemCard = ({ item }) => {
   const dispatch = useAppDispatch();
 
-  // ✅ update quantity
   const handleUpdateQuantity = (newQuantity) => {
-    if (newQuantity < 1) return; // prevent zero/negative
+    if (newQuantity < 1) return;
 
     dispatch(
       updateCartItem({
@@ -23,7 +22,6 @@ const CartItemCard = ({ item }) => {
     );
   };
 
-  // ✅ remove item
   const handleRemoveItem = () => {
     dispatch(
       deleteCartItem({
@@ -32,6 +30,14 @@ const CartItemCard = ({ item }) => {
       })
     );
   };
+
+  // ✅ price calculations
+  const itemMrp = item.product.mrpPrice || 0;
+  const itemSelling = item.product.sellingPrice || 0;
+  const qty = item.quantity || 0;
+
+  const totalMrp = itemMrp * qty;
+  const totalSelling = itemSelling * qty;
 
   return (
     <div className="border rounded-md relative">
@@ -43,21 +49,30 @@ const CartItemCard = ({ item }) => {
             alt={item.product.title}
           />
         </div>
-        <div className="space-y-2">
+
+        <div className="space-y-2 w-full">
           <h1 className="font-semibold text-lg">
             {item.product.seller?.businessDetails.businessName}
           </h1>
+
           <p className="text-gray-600 font-medium text-sm">{item.product.title}</p>
+
           <p className="text-gray-400 text-xs">
             <strong>Sold by: </strong> Natural Lifestyle Products Private Limited
           </p>
+
           <p className="text-sm">7 Days replacement available</p>
-          <p className="text-gray-500 text-sm">
-            <strong>Quantity: </strong> {item.quantity}
-          </p>
+
+          {/* ✅ Price Info */}
+          <div className="text-sm space-y-1">
+            <p>
+              <span className="line-through text-gray-400 mr-2">₹{itemMrp}</span>
+              <span className="font-semibold text-green-700">₹{itemSelling}</span>
+            </p>
+          </div>
         </div>
-        <Divider />
       </div>
+
       <Divider />
 
       <div className="flex justify-between items-center">
@@ -73,12 +88,11 @@ const CartItemCard = ({ item }) => {
           </div>
         </div>
 
-        <div className="pr-5">
-          <p className="text-gray-700 font-medium">₹{item.sellingPrice}</p>
+        <div className="pr-5 text-right">
+          <p className="text-gray-700 font-semibold">₹{totalSelling}</p>
         </div>
       </div>
 
-      {/* ✅ Delete button */}
       <div className="absolute top-1 right-1">
         <IconButton color="primary" onClick={handleRemoveItem}>
           <Close />

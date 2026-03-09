@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+import { Button, Dialog, DialogContent } from "@mui/material";
 import DealTable from "./DealTable";
 import EditDealForm from "./EditDealForm";
 import DealCategoryTable from "./DealCategoryTable";
 import CreateDealForm from "./CreateDealForm";
 import AddDealCategoryForm from "./AddDealCategoryForm";
-import { Button } from "@mui/material";
 
 const tabs = ["Deals", "Category", "Create Deal", "Add Deal Category"];
 
@@ -12,16 +12,15 @@ const Deal = () => {
   const [activeTab, setActiveTab] = useState("Deals");
   const [editingDeal, setEditingDeal] = useState(null);
 
+  const handleCloseDialog = () => setEditingDeal(null);
+
   return (
     <div>
       <div className="flex gap-4">
         {tabs.map((item) => (
           <Button
             key={item}
-            onClick={() => {
-              setActiveTab(item);
-              setEditingDeal(null); // reset edit mode when switching tabs
-            }}
+            onClick={() => setActiveTab(item)}
             variant={activeTab === item ? "contained" : "outlined"}
           >
             {item}
@@ -30,22 +29,27 @@ const Deal = () => {
       </div>
 
       <div className="mt-5">
-        {editingDeal ? (
-          <EditDealForm deal={editingDeal} onClose={() => setEditingDeal(null)} />
-        ) : activeTab === "Deals" ? (
+        {activeTab === "Deals" && (
           <DealTable onEdit={(deal) => setEditingDeal(deal)} />
-        ) : activeTab === "Category" ? (
-          <DealCategoryTable />
-        ) : activeTab === "Create Deal" ? (
-          <div className="mt-5 flex flex-col justify-center items-center h-[70vh]">
-            <CreateDealForm />
-          </div>
-        ) : (
-          <div className="mt-5 flex flex-col justify-center items-center h-[70vh]">
-            <AddDealCategoryForm />
-          </div>
         )}
+        {activeTab === "Category" && <DealCategoryTable />}
+        {activeTab === "Create Deal" && <CreateDealForm />}
+        {activeTab === "Add Deal Category" && <AddDealCategoryForm />}
       </div>
+
+      {/* ✅ POPUP MODAL */}
+      <Dialog
+        open={Boolean(editingDeal)}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          {editingDeal && (
+            <EditDealForm deal={editingDeal} onClose={handleCloseDialog} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

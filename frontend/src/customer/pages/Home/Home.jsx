@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ElectricCategory from './ElectricCategory/ElectricCategory'
 import CategoryGrid from './CategoryGrid/CategoryGrid'
 import Deal from './Deal/Deal'
@@ -6,10 +6,18 @@ import ShopByCategory from './ShopByCategory/ShopByCategory'
 import { Button } from '@mui/material'
 import { Storefront } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from '../../../State/Store'
+import { fetchHomePageData } from '../../../State/customer/customerSlice'
 // import Img from "../../../images/image.png"
 
 const Home = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const jwt = localStorage.getItem("jwt");
+    dispatch(fetchHomePageData({ jwt }));
+  }, [dispatch]);
   return (
     <>
     <div className='space-y-5 lg:space-y-10 relative pb-20'>

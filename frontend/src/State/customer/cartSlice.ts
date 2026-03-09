@@ -50,6 +50,7 @@ export const addItemToCart=createAsyncThunk<CartItem,{jwt:string | null;request:
                     Authorization:`Bearer ${jwt}`,
                 },
             });
+            console.log("Added item to cart response = = ",response.data);
             return response.data;
         } catch (error) {
             console.log("error = = = ",error);

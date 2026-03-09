@@ -11,11 +11,14 @@ const CategoryTable = ({ categories, setEditingCategory }) => {
   const dispatch = useAppDispatch();
   const jwt = localStorage.getItem("jwt");
 
+  console.log("Categories in CategoryTable:", categories);
+
   const handleDelete = (id) => {
     dispatch(deleteHomeCategory({ id, jwt }))
       .unwrap()
       .then(() => dispatch(fetchHomePageData({ jwt })));
   };
+  console.log("Categories in CategoryTable after delete handler:", categories);
 
   return (
     <TableContainer component={Paper}>

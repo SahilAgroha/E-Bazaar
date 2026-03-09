@@ -23,6 +23,7 @@ const PaymentSuccess = () => {
             paymentId:paymentId || "",
             paymentLinkId:paymentLinkId || '',
         }))
+        console.log("Payment ID:", paymentId);
     },[orderId])
 
   return (

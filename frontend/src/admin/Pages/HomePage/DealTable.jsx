@@ -1,78 +1,54 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Button, IconButton } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
-import { useAppDispatch, useAppSelector } from '../../../State/Store';
-import { getAllDeals } from '../../../State/admin/DealSlice';
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../../State/Store";
+import { getAllDeals, deleteDeal } from "../../../State/admin/DealSlice";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-// DealTable.jsx
 export default function DealTable({ onEdit }) {
   const dispatch = useAppDispatch();
-  const { deal } = useAppSelector(store => store);
+  const { deals } = useAppSelector((store) => store.deal);
 
-  React.useEffect(() => {
-    dispatch(getAllDeals())
+  useEffect(() => {
+    dispatch(getAllDeals());
   }, [dispatch]);
+
+  const handleDelete = (id) => {
+    dispatch(deleteDeal(id));
+  };
 
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      <Table>
         <TableHead>
           <TableRow>
-            <StyledTableCell>No</StyledTableCell>
-            <StyledTableCell>Image</StyledTableCell>
-            <StyledTableCell>Category</StyledTableCell>
-            <StyledTableCell align="right">Discount</StyledTableCell>
-            <StyledTableCell align="right">Update</StyledTableCell>
-            <StyledTableCell align="right">Delete</StyledTableCell>
+            <TableCell>No</TableCell>
+            <TableCell>Image</TableCell>
+            <TableCell>Category</TableCell>
+            <TableCell>Discount</TableCell>
+            <TableCell>Edit</TableCell>
+            <TableCell>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {deal.deals.map((item, index) => (
-            <StyledTableRow key={item.id}>
-              <StyledTableCell>{index + 1}</StyledTableCell>
-              <StyledTableCell>
-                <img className="w-20 rounded-md" src={item.category.image} alt="" />
-              </StyledTableCell>
-              <StyledTableCell>{item.category.categoryId}</StyledTableCell>
-              <StyledTableCell align="right">{item.discount}</StyledTableCell>
-              <StyledTableCell align="right">
-                <Button onClick={() => onEdit(item)}>
+          {deals.map((item, index) => (
+            <TableRow key={item.id}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>
+                <img src={item.category.image} alt="" className="w-20 rounded" />
+              </TableCell>
+              <TableCell>{item.category.name}</TableCell>
+              <TableCell>{item.discount}%</TableCell>
+              <TableCell>
+                <IconButton onClick={() => onEdit(item)}>
                   <Edit />
-                </Button>
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                <IconButton>
+                </IconButton>
+              </TableCell>
+              <TableCell>
+                <IconButton onClick={() => handleDelete(item.id)}>
                   <Delete sx={{ color: "red" }} />
                 </IconButton>
-              </StyledTableCell>
-            </StyledTableRow>
+              </TableCell>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
