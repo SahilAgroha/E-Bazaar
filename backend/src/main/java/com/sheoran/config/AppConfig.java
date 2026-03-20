@@ -24,19 +24,60 @@ public class AppConfig {
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.sessionManagement(management->management.sessionCreationPolicy(
-                SessionCreationPolicy.STATELESS
-        )).authorizeHttpRequests(authorize->authorize
-                .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/api/products/*/reviews").permitAll()
-                .anyRequest().permitAll()
-        ).addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
-                .csrf(csrf->csrf.disable())
-                .cors(cors->cors.configurationSource(corsConfigurationSource()));
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.sessionManagement(management->management.sessionCreationPolicy(
+//                SessionCreationPolicy.STATELESS
+//        )).authorizeHttpRequests(authorize->authorize
+//                .requestMatchers("/api/**").authenticated()
+//                        .requestMatchers("/swagger-ui/**",
+//                                "/v3/api-docs/**",
+//                                "/actuator/**").permitAll()
+//                .requestMatchers("/api/products/*/reviews").permitAll()
+//                .anyRequest().permitAll()
+//        ).addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
+//                .csrf(csrf->csrf.disable())
+//                .cors(cors->cors.configurationSource(corsConfigurationSource()));
+//
+//        return httpSecurity.build();
+//    }
 
-        return httpSecurity.build();
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+
+                        // ✅ Swagger + OpenAPI
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        // ✅ Actuator
+                        .requestMatchers("/actuator/**").permitAll()
+
+                        // ✅ Public APIs
+                        .requestMatchers("/api/products/*/reviews").permitAll()
+
+                        // ✅ Allow OPTIONS (CORS fix)
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // ✅ Secure APIs
+                        .requestMatchers("/api/**").authenticated()
+
+                        // ✅ Everything else
+                        .anyRequest().permitAll()
+                )
+                .addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class);
+
+        return http.build();
     }
 
     private CorsConfigurationSource corsConfigurationSource() {
