@@ -2,6 +2,7 @@ package com.sheoran.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sheoran.domain.AccountStatus;
 import com.sheoran.domain.USER_ROLE;
 import jakarta.persistence.*;
@@ -31,7 +32,7 @@ public class Seller {
     private String email;
 
     @Column(nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Embedded

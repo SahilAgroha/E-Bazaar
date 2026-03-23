@@ -15,11 +15,13 @@ import com.sheoran.service.SellerService;
 import com.sheoran.utils.OtpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -37,6 +39,9 @@ public class SellerController {
     private EmailService emailService;
     @Autowired
     private SellerReportService sellerReportService;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest req) throws Exception {
@@ -64,10 +69,12 @@ public class SellerController {
         VerificationCode verificationCode = new VerificationCode();
         verificationCode.setOtp(otp);
         verificationCode.setEmail(seller.getEmail());
+        verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(10));
+        verificationCode.setSeller(savedSeller);
         verificationCodeRepo.save(verificationCode);
 
         String subject = "Welcome to buyBaazar - Verify Your Seller Account";
-        String frontend_url = "http://localhost:5173/verify-seller/" + otp;
+        String frontend_url = frontendUrl+"/verify-seller/" + otp;
 
         // Styled HTML Template for Seller Registration
         String htmlContent = "<html>" +

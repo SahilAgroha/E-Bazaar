@@ -81,15 +81,18 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        VerificationCode isExist = verificationCodeRepo.findByEmail(email);
-        if (isExist != null) {
-            verificationCodeRepo.delete(isExist);
+        VerificationCode verificationCode = verificationCodeRepo.findByEmail(email);
+
+        if (verificationCode == null) {
+            verificationCode = new VerificationCode();
         }
+
+        verificationCodeRepo.save(verificationCode);
         System.out.println("Before Otp generate");
         String otp = OtpUtil.generateOtp();
         System.out.println("After Otp generate : "+otp);
 
-        VerificationCode verificationCode = new VerificationCode();
+
         verificationCode.setOtp(otp);
         verificationCode.setEmail(email);
         verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(5));

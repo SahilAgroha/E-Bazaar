@@ -23,51 +23,50 @@ const SellerAccountForm = () => {
     (state) => state.sellerAuth
   );
 
-  const handleStep = (value) => () => {
-    if (activeStep < steps.length - 1 || (activeStep > 0 && value === -1)) {
-      setActiveStep(activeStep + value);
-    }
-    if (activeStep === steps.length - 1 && value === 1) {
-      formik.handleSubmit(); // call formik submit
-    }
-  };
-
   const formik = useFormik({
     initialValues: {
+      sellerName: "",
+      email: "",
+      password: "",
       mobile: "",
-      otp: "",
       gstin: "",
+
+      businessDetails: {
+        businessName: "",
+        businessEmail: "",
+        businessMobile: "",
+      },
+
+      bankDetails: {
+        accountNumber: "",
+        accountHolderName: "",
+        ifscCode: "",
+      },
+
       pickupAddress: {
         name: "",
         mobile: "",
-        pincode: "",
+        pinCode: "",
         address: "",
         locality: "",
         city: "",
         state: "",
       },
-      bankDetails: {
-        accountNumber: "",
-        ifcCode: "",
-        accountHolderName: "",
-      },
-      sellerName: "",
-      email: "",
-      businessDetails: {
-        businessName: "",
-        businessEmail: "",
-        businessMobile: "",
-        logo: "",
-        banner: "",
-        businessAddress: "",
-      },
-      password: "",
     },
     onSubmit: (values) => {
       console.log("Submitting Seller Form:", values);
       dispatch(createSeller(values));
     },
   });
+
+  const handleStep = (value) => () => {
+    if (activeStep < steps.length - 1 || (activeStep > 0 && value === -1)) {
+      setActiveStep(activeStep + value);
+    }
+    if (activeStep === steps.length - 1 && value === 1) {
+      formik.handleSubmit();
+    }
+  };
 
   return (
     <div>
@@ -92,28 +91,18 @@ const SellerAccountForm = () => {
           )}
         </div>
 
-        {/* ✅ Show error or success instead of redirecting */}
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
         {createdSeller && (
-          <p className="text-green-600 text-sm">
-            Account created successfully. Please check your email for a
-            verification link.
+          <p className="text-green-600">
+            Account created successfully. Check your email.
           </p>
         )}
 
-        <div className="flex items-center justify-between">
-          <Button
-            onClick={handleStep(-1)}
-            variant="contained"
-            disabled={activeStep === 0}
-          >
+        <div className="flex justify-between">
+          <Button onClick={handleStep(-1)} disabled={activeStep === 0}>
             Back
           </Button>
-          <Button
-            onClick={handleStep(1)}
-            variant="contained"
-            disabled={loading}
-          >
+          <Button onClick={handleStep(1)} disabled={loading}>
             {activeStep === steps.length - 1
               ? loading
                 ? "Creating..."

@@ -10,9 +10,12 @@ import com.sheoran.model.BusinessDetails;
 import com.sheoran.model.Seller;
 import com.sheoran.repository.AddressRepo;
 import com.sheoran.repository.SellerRepo;
+import com.sheoran.repository.VerificationCodeRepo;
+import com.sheoran.service.EmailService;
 import com.sheoran.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,9 @@ public class SellerServiceImpl implements SellerService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AddressRepo addressRepo;
+
+
+
 
 
     @Override
@@ -209,4 +215,57 @@ public class SellerServiceImpl implements SellerService {
         seller.setAccountStatus(status);
         return sellerRepo.save(seller);
     }
+
+//    @Override
+//    public Seller registerSeller(Seller seller) throws Exception {
+//
+//        if (sellerRepo.findByEmail(seller.getEmail()) != null) {
+//            throw new Exception("Seller already exists");
+//        }
+//
+//        if (seller.getPassword() == null) {
+//            throw new RuntimeException("Password required");
+//        }
+//
+//        Address savedAddress = addressRepo.save(seller.getPickupAddress());
+//
+//        Seller newSeller = new Seller();
+//        newSeller.setEmail(seller.getEmail());
+//        newSeller.setPassword(passwordEncoder.encode(seller.getPassword()));
+//        newSeller.setSellerName(seller.getSellerName());
+//        newSeller.setPickupAddress(savedAddress);
+//        newSeller.setGSTIN(seller.getGSTIN());
+//        newSeller.setRole(USER_ROLE.ROLE_SELLER);
+//        newSeller.setMobile(seller.getMobile());
+//        newSeller.setBankDetails(seller.getBankDetails());
+//        newSeller.setBusinessDetails(seller.getBusinessDetails());
+//
+//        Seller savedSeller = sellerRepo.save(newSeller);
+//
+//        // 🔥 OTP GENERATION
+//        String otp = OtpUtil.generateOtp();
+//
+//        VerificationCode code = new VerificationCode();
+//        code.setOtp(otp);
+//        code.setEmail(savedSeller.getEmail());
+//        code.setExpiresAt(LocalDateTime.now().plusMinutes(10));
+//
+//        verificationCodeRepo.save(code);
+//
+//        // 🔥 Dynamic frontend URL
+//        String verifyLink = frontendUrl + "/verify-seller/" + otp;
+//
+//        String html = "<h2>Verify Account</h2>" +
+//                "<a href='" + verifyLink + "'>Click to verify</a>" +
+//                "<p>OTP: " + otp + "</p>";
+//
+//        emailService.sendVerificationOtpEmail(
+//                savedSeller.getEmail(),
+//                otp,
+//                "Verify your account",
+//                html
+//        );
+//
+//        return savedSeller;
+//    }
 }

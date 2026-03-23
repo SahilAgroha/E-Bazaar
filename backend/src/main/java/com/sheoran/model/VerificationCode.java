@@ -21,7 +21,8 @@ public class VerificationCode {
     @Column(nullable = false)
     private String otp;
 
-    @Column(nullable = false)
+
+    @Column(unique = true, nullable = false)
     private String email;
 
     @OneToOne(fetch = FetchType.LAZY)
