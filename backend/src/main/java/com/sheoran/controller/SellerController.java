@@ -70,7 +70,7 @@ public class SellerController {
         verificationCode.setOtp(otp);
         verificationCode.setEmail(seller.getEmail());
         verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(10));
-        verificationCode.setSeller(savedSeller);
+
         verificationCodeRepo.save(verificationCode);
 
         String subject = "Welcome to buyBaazar - Verify Your Seller Account";
