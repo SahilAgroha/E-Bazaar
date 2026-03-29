@@ -1,10 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SellerAccountForm from './SellerAccountForm';
 import SellerLoginForm from './SellerLoginForm';
 import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../../../State/Store';
 
 const BecomeSeller = () => {
     const [isLogin,setIsLogin]=useState(false)
+    const navigate = useNavigate();
+    const { seller } = useAppSelector(store => store.sellerAuth);
+
+    useEffect(() => {
+        // 'seller' is null on page load — only set after a real sellerLogin call.
+        // 'jwt' cannot be used here because sellerAuth initializes jwt from
+        // localStorage which may hold a customer token.
+        if (seller) {
+            navigate('/seller');
+        }
+    }, [seller]);
+
     const handleShowPage=()=>{
         setIsLogin(!isLogin);
     }

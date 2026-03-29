@@ -121,11 +121,11 @@ const authSlice=createSlice({
         })
 
         builder.addCase(signin.fulfilled,(state,action)=>{
-            state.jwt=action.payload
+            state.jwt=action.payload?.jwt ?? action.payload
             state.isLoggedIn=true;
         });
         builder.addCase(signup.fulfilled,(state,action)=>{
-            state.jwt=action.payload
+            state.jwt=action.payload?.jwt ?? action.payload
             state.isLoggedIn=true;
         });
         builder.addCase(fetchUserProfile.fulfilled,(state,action)=>{

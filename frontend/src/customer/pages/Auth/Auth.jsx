@@ -11,12 +11,15 @@ const Auth = () => {
     const { auth } = useSelector(store => store);
 
     useEffect(() => {
-        // This effect will now run whenever `auth.user` changes.
-        // It will detect the successful login and the user's role.
-        if (auth.user && auth.user.role === 'ROLE_ADMIN') {
+        if (!auth.user) return;
+
+        if (auth.user.role === 'ROLE_ADMIN') {
             navigate('/admin');
+        } else {
+            // Customer or Seller → go to home
+            navigate('/');
         }
-    }, [auth.user, navigate]); // Added auth.user to the dependency array
+    }, [auth.user]);
 
     return (
         <div className='flex justify-center h-[90vh] items-center'>

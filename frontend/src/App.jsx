@@ -53,7 +53,9 @@ function App() {
   // },[seller.profile])
 
   useEffect(()=>{
-    dispatch(fetchUserProfile({jwt: auth.jwt || localStorage.getItem('jwt')}))
+    // Always use a plain string — auth.jwt may briefly be the full response object
+    const jwt = typeof auth.jwt === 'string' ? auth.jwt : localStorage.getItem('jwt');
+    if(jwt) dispatch(fetchUserProfile({jwt}))
   },[auth.jwt])
 
 

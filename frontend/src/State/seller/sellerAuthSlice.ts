@@ -23,10 +23,12 @@ export const sellerLogin = createAsyncThunk<any, any>(
   "sellerAuth/sellerLogin",
   async (loginRequest, { rejectWithValue }) => {
     try {
-      const response = await api.post("/sellers/login", loginRequest);  // impl    
+      const response = await api.post("/sellers/login", loginRequest);
       const jwt = response.data.jwt;
+      const role = response.data.role;
       localStorage.setItem("jwt", jwt);
-      return { jwt, seller: response.data.seller };
+      // Backend returns { jwt, message, role } — no seller object
+      return { jwt, role };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
@@ -103,7 +105,8 @@ const sellerAuthSlice = createSlice({
       .addCase(sellerLogin.fulfilled, (state, action) => {
         state.loading = false;
         state.jwt = action.payload.jwt;
-        state.seller = action.payload.seller;
+        // Build seller from role since backend doesn't return a seller object
+        state.seller = { role: action.payload.role };
         state.isAuthenticated = true;
       })
       .addCase(sellerLogin.rejected, (state, action) => {
