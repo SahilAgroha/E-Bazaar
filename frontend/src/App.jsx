@@ -13,7 +13,7 @@ import Review from './customer/pages/Review/Review'
 import Cart from './customer/pages/Cart/Cart'
 import Checkout from './customer/pages/Checkout/Checkout'
 import Account from './customer/pages/Account/Account'
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
 import ProductDetails from './customer/pages/Page Details/ProductDetails'
 import BecomeSeller from './customer/pages/Become Seller/BecomeSeller'
 import SellerDashboard from './seller/pages/SellerDashboard/SellerDashboard'
@@ -37,6 +37,7 @@ function App() {
   const dispatch=useAppDispatch();
   const {seller,auth}=useAppSelector(store=>store)
   const navigate=useNavigate()
+  const location=useLocation()
 
   // console.log("Current API URL:", import.meta.env.VITE_API_URL);
 
@@ -59,11 +60,14 @@ function App() {
   },[auth.jwt])
 
 
+  const isSellerPage = location.pathname.startsWith("/seller");
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
     <>
       <ThemeProvider theme={customeTheme}>
         <div>
-          <Navbar/>
+          {(!isSellerPage && !isAdminPage) && <Navbar/>}
           <Routes>
             <Route path='/' element={<Home/>}/>
             <Route path='/login' element={<Auth/>}/> 
