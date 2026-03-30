@@ -1,23 +1,21 @@
-import React from 'react'
-import SellerDrawerList from '../../components/SellerDrawerList/SellerDrawerList'
-import SellerRoutes from '../../../Routes/SellerRoutes'
+import React from "react";
+import SellerDrawerList from "../../components/SellerDrawerList/SellerDrawerList";
+import SellerRoutes from "../../../Routes/SellerRoutes";
 
 const SellerDashboard = () => {
-  const toggleDrawer=()=>{
-
-  }
+  const toggleDrawer = () => {};
   return (
     <div>
       <div className="lg:flex lg:h[90vh]">
         <section className="0 lg:block h-full">
-            <SellerDrawerList toggleDrawer={toggleDrawer}/>
+          <SellerDrawerList toggleDrawer={toggleDrawer} />
         </section>
         <section className="p-10 w-full lg:w-[80%] overflow-y-auto">
-            <SellerRoutes/>
+          <SellerRoutes />
         </section>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SellerDashboard
+export default SellerDashboard;
