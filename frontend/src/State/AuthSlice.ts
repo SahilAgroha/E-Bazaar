@@ -11,10 +11,10 @@ export const sendLoginSignupOtp=createAsyncThunk("/auth/sendLoginSignupOtp",
         try {
             const response =await api.post("/auth/sent/login-signup-otp",{email}) 
             // console.log("login otp  - - ",response);
-            
-        } catch (error) {
+            return response.data;
+        } catch (error: any) {
             console.log("error - - - ",error);
-            
+            return rejectWithValue(error.response?.data?.message || "Failed to send OTP");
         }
     }
 )
@@ -27,9 +27,8 @@ export const signin=createAsyncThunk<any,any>("/auth/signin",
             console.log("Signing  - - ",response);
             localStorage.setItem('jwt',response.data.jwt)
             return response.data
-        } catch (error) {
-            // console.log("error - - - ",error);
-            
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     }
 )
@@ -42,9 +41,8 @@ export const signup=createAsyncThunk<any,any>("/auth/signup",
             // console.log("Signup  - - ",response);
             localStorage.setItem('jwt',response.data.jwt)
             return response.data
-        } catch (error) {
-            // console.log("error - - - ",error);
-            
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Signup failed");
         }
     }
 )
@@ -70,7 +68,7 @@ export const fetchUserProfile = createAsyncThunk<any, any>(
       return response.data;
 
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Something went wrong");
+      return rejectWithValue(error.response?.data?.message || error.message || "Something went wrong");
     }
   }
 );
@@ -94,6 +92,7 @@ interface AuthState{
     isLoggedIn:boolean,
     user:User | null,
     loading:boolean,
+    error:string | null,
 }
 
 const initialState:AuthState={
@@ -102,6 +101,7 @@ const initialState:AuthState={
     isLoggedIn:false,
     user:null,
     loading:false,
+    error:null,
 }
 
 const authSlice=createSlice({
@@ -109,29 +109,71 @@ const authSlice=createSlice({
     initialState,
     reducers:{},
     extraReducers:(builder)=>{
+        const getErrorMessage = (payload: any): string => {
+            if (typeof payload === 'string') return payload;
+            if (payload && typeof payload === 'object') {
+                return payload.message || payload.error || "An unexpected error occurred";
+            }
+            return "An unexpected error occurred";
+        };
         builder.addCase(sendLoginSignupOtp.pending,(state)=>{
             state.loading=true;
+            state.error=null;
         })
         builder.addCase(sendLoginSignupOtp.fulfilled,(state)=>{
             state.loading=false;
             state.otpSent=true;
         })
-        builder.addCase(sendLoginSignupOtp.rejected,(state)=>{
+        builder.addCase(sendLoginSignupOtp.rejected,(state,action)=>{
             state.loading=false;
+            state.error=getErrorMessage(action.payload);
         })
 
+        builder.addCase(signin.pending,(state)=>{
+            state.loading=true;
+            state.error=null;
+        });
         builder.addCase(signin.fulfilled,(state,action)=>{
+            state.loading=false;
             state.jwt=action.payload?.jwt ?? action.payload
             state.isLoggedIn=true;
+        });
+        builder.addCase(signin.rejected,(state,action)=>{
+            state.loading=false;
+            state.error=getErrorMessage(action.payload);
+            state.isLoggedIn=false;
+        });
+
+        builder.addCase(signup.pending,(state)=>{
+            state.loading=true;
+            state.error=null;
         });
         builder.addCase(signup.fulfilled,(state,action)=>{
+            state.loading=false;
             state.jwt=action.payload?.jwt ?? action.payload
             state.isLoggedIn=true;
         });
+        builder.addCase(signup.rejected,(state,action)=>{
+            state.loading=false;
+            state.error=getErrorMessage(action.payload);
+            state.isLoggedIn=false;
+        });
+
+        builder.addCase(fetchUserProfile.pending,(state)=>{
+            state.loading=true;
+            state.error=null;
+        });
         builder.addCase(fetchUserProfile.fulfilled,(state,action)=>{
+            state.loading=false;
             state.user=action.payload
             state.isLoggedIn=true;
         });
+        builder.addCase(fetchUserProfile.rejected,(state,action)=>{
+            state.loading=false;
+            state.error=getErrorMessage(action.payload);
+            state.isLoggedIn=false;
+        });
+
         builder.addCase(logout.fulfilled,(state)=>{
             state.jwt=null
             state.isLoggedIn=false

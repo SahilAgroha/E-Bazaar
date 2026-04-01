@@ -13,8 +13,11 @@ import {
   FormHelperText,
   IconButton,
   CircularProgress,
+  Typography,
+  Box,
+  Divider
 } from "@mui/material";
-import { AddPhotoAlternate, Close } from "@mui/icons-material";
+import { AddPhotoAlternate, Close, WarningAmber } from "@mui/icons-material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { uploadToCloudinary } from "../../../Util/UploadToCloudinary";
@@ -24,15 +27,33 @@ import { mainCategory } from "../../../data/category/mainCategory";
 import { useAppDispatch, useAppSelector } from "../../../State/Store";
 import { updateProduct, fetchSellerProducts } from "../../../State/seller/sellerProductSlice";
 
+// Shared Premium UI for text fields
+const textFieldSx = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '12px',
+    backgroundColor: '#fafaf9',
+    '& fieldset': { borderColor: '#e5e7eb' },
+    '&:hover fieldset': { borderColor: '#d1d5db' },
+    '&.Mui-focused fieldset': { borderColor: '#00927c', borderWidth: '2px' },
+  },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#00927c' },
+};
+
+const getCategoryId = (cat) => {
+  if (!cat) return "";
+  return typeof cat === "object" ? (cat.categoryId || cat.name || "") : cat;
+};
+
 const EditProductDialog = ({ open, onClose, product }) => {
   const dispatch = useAppDispatch();
   const jwt = localStorage.getItem("jwt");
   const { loading } = useAppSelector((state) => state.sellerProduct);
 
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(false); // Controls unsaved changes prompt
 
   const formik = useFormik({
-    enableReinitialize: true, // ✅ important for pre-filling
+    enableReinitialize: true,
     initialValues: {
       title: product?.title || "",
       description: product?.description || "",
@@ -41,9 +62,9 @@ const EditProductDialog = ({ open, onClose, product }) => {
       quantity: product?.quantity || "",
       color: product?.color || "",
       images: product?.images || [],
-      category: product?.category || "",
-      category2: product?.category2 || "",
-      category3: product?.category3 || "",
+      category: getCategoryId(product?.category),
+      category2: getCategoryId(product?.category2),
+      category3: getCategoryId(product?.category3),
       sizes: product?.sizes || "",
     },
     onSubmit: async (values) => {
@@ -57,7 +78,8 @@ const EditProductDialog = ({ open, onClose, product }) => {
             })
           );
           dispatch(fetchSellerProducts(jwt));
-          onClose();
+          setConfirmDialog(false);
+          onClose(); // finally close the edit dialog
         }
       } catch (err) {
         console.error("Update error", err);
@@ -85,241 +107,360 @@ const EditProductDialog = ({ open, onClose, product }) => {
     formik.setFieldValue("images", updated);
   };
 
+  // Safe closing mechanism: Check for unsaved edits first
+  const handleRequestClose = (event, reason) => {
+    // Stricter check: Deep equality to ensure there are true changes before nagging
+    const hasTrueChanges = JSON.stringify(formik.initialValues) !== JSON.stringify(formik.values);
+    
+    if (hasTrueChanges) {
+      setConfirmDialog(true);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleConfirmDiscard = () => {
+    formik.resetForm();
+    setConfirmDialog(false);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Edit Product</DialogTitle>
-      <form onSubmit={formik.handleSubmit}>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
-            {/* Image Upload */}
-            <Grid className="flex flex-wrap gap-5" item xs={12}>
-              <input
-                type="file"
-                id="fileInputEdit"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageChange}
-              />
-              <label className="relative" htmlFor="fileInputEdit">
-                <span className="w-24 h-24 cursor-pointer flex items-center justify-center p-3 border rounded-md border-gray-400">
-                  <AddPhotoAlternate className="text-gray-700" />
-                </span>
-                {uploadingImage && (
-                  <div className="absolute left-0 right-0 top-0 bottom-0 w-24 h-24 flex justify-center items-center">
-                    <CircularProgress />
-                  </div>
-                )}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {formik.values.images.map((image, index) => (
-                  <div className="relative" key={index}>
-                    <img
-                      className="w-24 h-24 object-cover"
-                      src={image}
-                      alt={`EditImage ${index + 1}`}
-                    />
-                    <IconButton
-                      onClick={() => handleRemoveImage(index)}
-                      size="small"
-                      color="error"
-                      sx={{ position: "absolute", top: 0, right: 0 }}
-                    >
-                      <Close sx={{ fontSize: "1rem" }} />
-                    </IconButton>
-                  </div>
-                ))}
-              </div>
-            </Grid>
+    <>
+      <Dialog 
+        open={open} 
+        onClose={handleRequestClose} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          elevation: 0,
+          sx: { 
+            borderRadius: 4, 
+            boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <Box sx={{ p: 4, pb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em' }}>
+            Edit Product
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5 }}>
+            Update your product's details, pricing, and inventory specifications.
+          </Typography>
+        </Box>
 
-            {/* Title */}
-            <Grid size={{xs:12}}>
-              <TextField
-                fullWidth
-                id="title"
-                label="Title"
-                value={formik.values.title}
-                onChange={formik.handleChange}
-              />
-            </Grid>
+        <form onSubmit={formik.handleSubmit}>
+          <DialogContent sx={{ p: 4, pt: 1 }}>
+            <Grid container spacing={3}>
+              {/* Image Upload */}
+              <Grid size={{ xs: 12 }}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <input
+                    type="file"
+                    id="fileInputEdit"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleImageChange}
+                  />
+                  <label className="relative" htmlFor="fileInputEdit">
+                    <Box sx={{ 
+                      width: 90, height: 90, cursor: 'pointer', display: 'flex', 
+                      alignItems: 'center', justifyContent: 'center', 
+                      border: '2px dashed #cbd5e1', borderRadius: 3,
+                      bgcolor: '#f8fafc', '&:hover': { borderColor: '#94a3b8', bgcolor: '#f1f5f9' },
+                      transition: 'all 0.2s'
+                    }}>
+                      <AddPhotoAlternate sx={{ color: '#64748b', fontSize: 32 }} />
+                    </Box>
+                    {uploadingImage && (
+                      <Box sx={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CircularProgress size={24} sx={{ color: '#00927c' }} />
+                      </Box>
+                    )}
+                  </label>
+                  
+                  {formik.values.images.map((image, index) => (
+                    <Box key={index} sx={{ position: 'relative', width: 90, height: 90, borderRadius: 3, overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <img
+                        className="w-full h-full object-cover"
+                        src={image}
+                        alt={`EditImage ${index + 1}`}
+                      />
+                      <IconButton
+                        onClick={() => handleRemoveImage(index)}
+                        size="small"
+                        sx={{ 
+                          position: "absolute", top: 4, right: 4, bgcolor: 'rgba(255,255,255,0.9)', 
+                          color: '#ef4444', '&:hover': { bgcolor: '#fee2e2' }, p: 0.5
+                        }}
+                      >
+                        <Close sx={{ fontSize: "1rem" }} />
+                      </IconButton>
+                    </Box>
+                  ))}
+                </Box>
+              </Grid>
 
-            {/* Description */}
-            <Grid size={{xs:12}}>
-              <TextField
-                fmultiline rows={4}
-                fullWidth
-                id="description"
-                label="Description"        
-                value={formik.values.description}
-                onChange={formik.handleChange}
-              />
-            </Grid>
-
-            {/* Prices */}
-            <Grid size={{xs:12,md:6,lg:3}}>
-              <TextField
-                fullWidth
-                type="number"
-                id="mrpPrice"
-                label="MRP Price"
-                value={formik.values.mrpPrice}
-                onChange={formik.handleChange}
-              />
-            </Grid>
-            <Grid size={{xs:12,md:6,lg:3}}>
-              <TextField
-                fullWidth
-                type="number"
-                id="sellingPrice"
-                label="Selling Price"
-                value={formik.values.sellingPrice}
-                onChange={formik.handleChange}
-              />
-            </Grid>
-            <Grid item size={{xs:12,md:4,lg:3}}>
-              <TextField name='quantity' type='number'
-                fullWidth id='quantity' label='Quantity' value={formik.values.quantity} onChange={formik.handleChange}
-                error={formik.touched.quantity && Boolean(formik.errors.quantity)} helperText={formik.touched.quantity && formik.errors.quantity} required />
-             </Grid>
-
-            {/* Color */}
-            <Grid size={{xs:12,md:4,lg:3}}>
-              <FormControl fullWidth>
-                <InputLabel id="color-label">Color</InputLabel>
-                <Select
-                  labelId="color-label"
-                  id="color"
-                  name="color"
-                  value={formik.values.color}
+              {/* Title */}
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  id="title"
+                  label="Product Title"
+                  value={formik.values.title}
                   onChange={formik.handleChange}
-                >
-                  {colors.map((color) => (
-                    <MenuItem key={color.name} value={color.name}>
-                      <div className="flex gap-3">
-                        <span
-                          style={{ backgroundColor: color.hex }}
-                          className={`h-5 w-5 rounded-full ${
-                            color.name === "White" ? "border" : ""
-                          }`}
-                        ></span>
-                        <p>{color.name}</p>
-                      </div>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+                  sx={textFieldSx}
+                />
+              </Grid>
 
-            {/* Sizes */}
-            <Grid size={{ xs: 12, md: 4, lg: 3 }}>
-              <FormControl fullWidth>
-                <InputLabel id="sizes-label">Sizes</InputLabel>
-                <Select
-                  labelId="sizes-label"
-                  id="sizes"
-                  name="sizes"
-                  value={formik.values.sizes}
+              {/* Description */}
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  multiline rows={4}
+                  fullWidth
+                  id="description"
+                  label="Detailed Description"        
+                  value={formik.values.description}
                   onChange={formik.handleChange}
-                >
-                  {sizes.map((size) => (
-                    <MenuItem key={size.name} value={size.name}>
-                      {size.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+                  sx={textFieldSx}
+                />
+              </Grid>
 
-            {/* Category 1 */}
-            <Grid size={{xs:12,md:4,lg:4}}>
-              <FormControl fullWidth>
-                <InputLabel id="category-label">Category</InputLabel>
-                <Select
-                  labelId="category-label"
-                  id="category"
-                  name="category"
-                  value={formik.values.category}
-                  onChange={(e) => {
-                    formik.handleChange(e);
-                    formik.setFieldValue("category2", "");
-                    formik.setFieldValue("category3", "");
-                  }}
-                >
-                  {mainCategory.map((item) => (
-                    <MenuItem key={item.categoryId} value={item.categoryId}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+              {/* Prices */}
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  id="mrpPrice"
+                  label="MRP Price (₹)"
+                  value={formik.values.mrpPrice}
+                  onChange={formik.handleChange}
+                  sx={textFieldSx}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  id="sellingPrice"
+                  label="Selling Price (₹)"
+                  value={formik.values.sellingPrice}
+                  onChange={formik.handleChange}
+                  sx={textFieldSx}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <TextField 
+                  name='quantity' type='number'
+                  fullWidth id='quantity' label='Stock Quantity' 
+                  value={formik.values.quantity} onChange={formik.handleChange}
+                  sx={textFieldSx}
+                />
+               </Grid>
 
-            {/* Category 2 */}
-            <Grid size={{xs:12,md:4,lg:4}}>
-              <FormControl fullWidth>
-                <InputLabel id="category2-label">Second Category</InputLabel>
-                <Select
-                  labelId="category2-label"
-                  id="category2"
-                  name="category2"
-                  value={formik.values.category2}
-                  onChange={(e) => {
-                    formik.handleChange(e);
-                    formik.setFieldValue("category3", "");
-                  }}
-                  disabled={!formik.values.category}
-                >
-                  {mainCategory
-                    .find((cat) => cat.categoryId === formik.values.category)
-                    ?.levelTwoCategory?.map((sub) => (
-                      <MenuItem key={sub.categoryId} value={sub.categoryId}>
-                        {sub.name}
+              {/* Color */}
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <FormControl fullWidth sx={textFieldSx}>
+                  <InputLabel id="color-label">Color</InputLabel>
+                  <Select
+                    labelId="color-label"
+                    id="color"
+                    name="color"
+                    value={formik.values.color}
+                    onChange={formik.handleChange}
+                    label="Color"
+                  >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    {colors.map((color) => (
+                      <MenuItem key={color.name} value={color.name}>
+                        <div className="flex items-center gap-3">
+                          <span
+                            style={{ backgroundColor: color.hex }}
+                            className={`h-4 w-4 rounded-full ${color.name === "White" ? "border border-gray-300" : "shadow-sm"}`}
+                          ></span>
+                          <Typography sx={{ fontSize: 14 }}>{color.name}</Typography>
+                        </div>
                       </MenuItem>
                     ))}
-                </Select>
-              </FormControl>
-            </Grid>
+                  </Select>
+                </FormControl>
+              </Grid>
 
-            {/* Category 3 */}
-            <Grid size={{xs:12,md:4,lg:4}}>
-              <FormControl fullWidth>
-                <InputLabel id="category3-label">Third Category</InputLabel>
-                <Select
-                  labelId="category3-label"
-                  id="category3"
-                  name="category3"
-                  value={formik.values.category3}
-                  onChange={formik.handleChange}
-                  disabled={!formik.values.category2}
-                >
-                  {mainCategory
-                    .flatMap((cat) => cat.levelTwoCategory || [])
-                    .find(
-                      (sub) => sub.categoryId === formik.values.category2
-                    )
-                    ?.levelThreeCategory?.map((third) => (
-                      <MenuItem key={third.categoryId} value={third.categoryId}>
-                        {third.name}
+              {/* Category 1 */}
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl fullWidth sx={textFieldSx}>
+                  <InputLabel id="category-label">Primary Category</InputLabel>
+                  <Select
+                    labelId="category-label"
+                    id="category"
+                    name="category"
+                    value={formik.values.category}
+                    onChange={(e) => {
+                      formik.handleChange(e);
+                      formik.setFieldValue("category2", "");
+                      formik.setFieldValue("category3", "");
+                    }}
+                    label="Primary Category"
+                  >
+                    {mainCategory.map((item) => (
+                      <MenuItem key={item.categoryId} value={item.categoryId}>
+                        {item.name}
                       </MenuItem>
                     ))}
-                </Select>
-              </FormControl>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Category 2 */}
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl fullWidth sx={textFieldSx} disabled={!formik.values.category}>
+                  <InputLabel id="category2-label">Sub Category</InputLabel>
+                  <Select
+                    labelId="category2-label"
+                    id="category2"
+                    name="category2"
+                    value={formik.values.category2}
+                    onChange={(e) => {
+                      formik.handleChange(e);
+                      formik.setFieldValue("category3", "");
+                    }}
+                    label="Sub Category"
+                  >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    {mainCategory
+                      .find((cat) => cat.categoryId === formik.values.category)
+                      ?.levelTwoCategory?.map((sub) => (
+                        <MenuItem key={sub.categoryId} value={sub.categoryId}>
+                          {sub.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Category 3 */}
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl fullWidth sx={textFieldSx} disabled={!formik.values.category2}>
+                  <InputLabel id="category3-label">Final Category</InputLabel>
+                  <Select
+                    labelId="category3-label"
+                    id="category3"
+                    name="category3"
+                    value={formik.values.category3}
+                    onChange={formik.handleChange}
+                    label="Final Category"
+                  >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    {mainCategory
+                      .flatMap((cat) => cat.levelTwoCategory || [])
+                      .find(
+                        (sub) => sub.categoryId === formik.values.category2
+                      )
+                      ?.levelThreeCategory?.map((third) => (
+                        <MenuItem key={third.categoryId} value={third.categoryId}>
+                          {third.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              
+              {/* Sizes */}
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl fullWidth sx={textFieldSx}>
+                  <InputLabel id="sizes-label">Sizes</InputLabel>
+                  <Select
+                    labelId="sizes-label"
+                    id="sizes"
+                    name="sizes"
+                    value={formik.values.sizes}
+                    onChange={formik.handleChange}
+                    label="Sizes"
+                  >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    {sizes.map((size) => (
+                      <MenuItem key={size.name} value={size.name}>
+                        {size.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-          </Grid>
+          </DialogContent>
+
+          <Divider sx={{ borderColor: '#e2e8f0' }} />
+          
+          <DialogActions sx={{ p: 3, bgcolor: '#f8fafc' }}>
+            <Button 
+              onClick={handleRequestClose}
+              sx={{ color: '#64748b', fontWeight: 600, '&:hover': { bgcolor: '#f1f5f9' }, px: 3, py: 1, borderRadius: 2 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading}
+              sx={{ 
+                bgcolor: '#00927c', 
+                color: 'white', 
+                fontWeight: 600,
+                boxShadow: 'none',
+                px: 4, py: 1, 
+                borderRadius: 2,
+                '&:hover': { bgcolor: '#007a68', boxShadow: '0 4px 6px -1px rgb(0 146 124 / 0.4)' },
+                '&.Mui-disabled': { bgcolor: '#ccfbf1', color: '#14b8a6' }
+              }}
+            >
+              {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Update Product"}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <Dialog 
+        open={confirmDialog} 
+        onClose={() => setConfirmDialog(false)}
+        PaperProps={{
+          elevation: 0,
+          sx: { borderRadius: 3, boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', p: 1 }
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1, color: '#0f172a', fontWeight: 700 }}>
+          <WarningAmber sx={{ color: '#f59e0b', fontSize: 28 }} />
+          Unsaved Changes
+        </DialogTitle>
+        <DialogContent sx={{ pb: 3 }}>
+          <Typography sx={{ color: '#475569' }}>
+            You have unsaved changes. Do you want to save them before you leave?
+          </Typography>
         </DialogContent>
-
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={loading}
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button 
+            onClick={() => setConfirmDialog(false)} 
+            sx={{ color: '#64748b', fontWeight: 600 }}
           >
-            {loading ? <CircularProgress size={20} /> : "Update Product"}
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleConfirmDiscard} 
+            sx={{ color: '#ef4444', fontWeight: 600, '&:hover': { bgcolor: '#fef2f2' } }}
+          >
+            Don't Save
+          </Button>
+          <Button 
+            onClick={formik.handleSubmit} 
+            variant="contained"
+            sx={{ bgcolor: '#00927c', boxShadow: 'none', fontWeight: 600, '&:hover': { bgcolor: '#007a68', boxShadow: 'none' } }}
+          >
+            Save
           </Button>
         </DialogActions>
-      </form>
-    </Dialog>
+      </Dialog>
+    </>
   );
 };
 

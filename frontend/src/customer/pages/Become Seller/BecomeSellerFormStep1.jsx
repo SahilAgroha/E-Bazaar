@@ -2,13 +2,16 @@ import { Box, TextField } from "@mui/material";
 
 const BecomeSellerFormStep1 = ({ formik }) => {
   return (
-    <Box>
+    <div className="flex flex-col gap-5">
       <TextField
         fullWidth
         name="mobile"
         label="Mobile"
         value={formik.values.mobile}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+        helperText={formik.touched.mobile && formik.errors.mobile}
       />
 
       <TextField
@@ -18,7 +21,7 @@ const BecomeSellerFormStep1 = ({ formik }) => {
         value={formik.values.gstin}
         onChange={formik.handleChange}
       />
-    </Box>
+    </div>
   );
 };
 

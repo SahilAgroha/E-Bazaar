@@ -1,12 +1,25 @@
-import React, { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Button, TextField, Snackbar, Alert } from "@mui/material";
 import { useFormik } from "formik";
-import { useAppDispatch } from "../../../State/Store";
+import { useAppDispatch, useAppSelector } from "../../../State/Store";
 import { sendLoginSignupOtp, signup } from "../../../State/AuthSlice";
 
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
   const [otpSent, setOtpSent] = useState(false);
+  const { auth } = useAppSelector((store) => store);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  useEffect(() => {
+    if (auth.error) {
+      setSnackbarOpen(true);
+    }
+  }, [auth.error]);
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -31,7 +44,7 @@ const RegisterForm = () => {
 
   return (
     <div>
-      <h1 className="text-center font-bold text-xl text-[#00927c] pb-8">
+      <h1 className="text-center font-bold text-xl text-primary-color pb-8">
         Signup
       </h1>
 
@@ -102,6 +115,12 @@ const RegisterForm = () => {
           </Button>
         )}
       </form>
+
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={handleCloseSnackbar} severity="error" variant="filled" sx={{ width: '100%', fontWeight: 'bold' }}>
+          {auth.error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

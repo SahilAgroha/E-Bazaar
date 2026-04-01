@@ -81,6 +81,14 @@ const sellerAuthSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    const getErrorMessage = (payload: any): string => {
+      if (typeof payload === 'string') return payload;
+      if (payload && typeof payload === 'object') {
+        return payload.message || payload.error || "An unexpected error occurred";
+      }
+      return "An unexpected error occurred";
+    };
+
     // CREATE SELLER
     builder
       .addCase(createSeller.pending, (state) => {
@@ -93,7 +101,7 @@ const sellerAuthSlice = createSlice({
       })
       .addCase(createSeller.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = getErrorMessage(action.payload);
       });
 
     // LOGIN
@@ -111,7 +119,7 @@ const sellerAuthSlice = createSlice({
       })
       .addCase(sellerLogin.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = getErrorMessage(action.payload);
         state.isAuthenticated = false;
       });
 
@@ -127,7 +135,7 @@ const sellerAuthSlice = createSlice({
       })
       .addCase(verifySellerOtp.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = getErrorMessage(action.payload);
       });
   },
 });

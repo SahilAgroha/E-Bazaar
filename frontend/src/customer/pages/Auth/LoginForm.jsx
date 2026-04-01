@@ -1,12 +1,24 @@
 import { useFormik } from 'formik';
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../State/Store';
-import { Button, CircularProgress, TextField } from '@mui/material';
+import { Button, CircularProgress, TextField, Snackbar, Alert } from '@mui/material';
 import { sendLoginSignupOtp, signin } from '../../../State/AuthSlice';
 
 const LoginForm = () => {
     const dispatch=useAppDispatch();
     const {auth}=useAppSelector(store=>store);
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    useEffect(() => {
+      if (auth.error) {
+        setSnackbarOpen(true);
+      }
+    }, [auth.error]);
+
+    const handleCloseSnackbar = () => {
+      setSnackbarOpen(false);
+    };
 
     const formik=useFormik({
       initialValues:{
@@ -25,7 +37,7 @@ const LoginForm = () => {
 
   return (
     <div>
-      <h1 className="text-center font-bold text-xl text-[#00927c] pb-8">Login</h1>
+      <h1 className="text-center font-bold text-xl text-primary-color pb-8">Login</h1>
       <div className="space-y-5">
         <TextField fullWidth name='email' label="Email"
         onChange={formik.handleChange} onBlur={formik.handleBlur} 
@@ -46,6 +58,11 @@ const LoginForm = () => {
             Login
           </Button> }
       </div>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={handleCloseSnackbar} severity="error" variant="filled" sx={{ width: '100%', fontWeight: 'bold' }}>
+          {auth.error}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }

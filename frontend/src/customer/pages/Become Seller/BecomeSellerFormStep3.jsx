@@ -2,7 +2,7 @@ import { TextField } from "@mui/material";
 
 const BecomeSellerFormStep3 = ({ formik }) => {
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5">
       <TextField
         fullWidth
         name="bankDetails.accountNumber"

@@ -13,6 +13,7 @@ spring:
       max-lifetime: 30000        # 30 sec (VERY IMPORTANT)
       connection-timeout: 30000
       keepalive-time: 15000 
+      connection-test-query: SELECT 1
 
   jpa:
     hibernate:

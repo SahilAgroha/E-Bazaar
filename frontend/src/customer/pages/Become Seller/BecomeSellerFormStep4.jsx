@@ -2,7 +2,7 @@ import { TextField } from "@mui/material";
 
 const BecomeSellerFormStep4 = ({ formik }) => {
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5">
       <TextField
         fullWidth
         name="businessDetails.businessName"
@@ -17,6 +17,9 @@ const BecomeSellerFormStep4 = ({ formik }) => {
         label="Seller Name"
         value={formik.values.sellerName}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.sellerName && Boolean(formik.errors.sellerName)}
+        helperText={formik.touched.sellerName && formik.errors.sellerName}
       />
 
       <TextField
@@ -25,6 +28,9 @@ const BecomeSellerFormStep4 = ({ formik }) => {
         label="Email"
         value={formik.values.email}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.email && Boolean(formik.errors.email)}
+        helperText={formik.touched.email && formik.errors.email}
       />
 
       <TextField
@@ -34,6 +40,9 @@ const BecomeSellerFormStep4 = ({ formik }) => {
         label="Password"
         value={formik.values.password}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.password && Boolean(formik.errors.password)}
+        helperText={formik.touched.password && formik.errors.password}
       />
     </div>
   );
