@@ -14,8 +14,10 @@ spring:
       keepalive-time: 15000
       connection-test-query: SELECT 1 
 
+
   jpa:
     hibernate:
+      default_schema: buybaazar
       ddl-auto: ${JPA_DDL:update}
     show-sql: ${JPA_SHOW_SQL:false}
     properties:
