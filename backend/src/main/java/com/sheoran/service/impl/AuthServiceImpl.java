@@ -97,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
         verificationCode.setEmail(email);
         verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(5));
         System.out.println("Before VerificationCode Save");
-        verificationCodeRepo.save(verificationCode);.
+        verificationCodeRepo.save(verificationCode);
         System.out.println("After Verifaction Code Save");
 
 
