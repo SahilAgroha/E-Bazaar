@@ -1,8 +1,6 @@
 package com.sheoran.controller;
 
 import com.sheoran.domain.USER_ROLE;
-import com.sheoran.model.User;
-import com.sheoran.model.VerificationCode;
 import com.sheoran.repository.UserRepo;
 import com.sheoran.request.LoginOtpRequest;
 import com.sheoran.request.LoginRequest;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")    //     complete
 public class AuthController {
 
-    @Autowired
-    private UserRepo userRepo;
 
     @Autowired
     private AuthService authService;

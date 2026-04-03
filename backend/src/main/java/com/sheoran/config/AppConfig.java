@@ -52,27 +52,17 @@ public class AppConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-
-                        // ✅ Swagger + OpenAPI
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
-
-                        // ✅ Actuator
                         .requestMatchers("/actuator/**").permitAll()
-
-                        // ✅ Public APIs
                         .requestMatchers("/api/products/*/reviews").permitAll()
 
-                        // ✅ Allow OPTIONS (CORS fix)
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // ✅ Secure APIs
                         .requestMatchers("/api/**").authenticated()
 
-                        // ✅ Everything else
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class);
