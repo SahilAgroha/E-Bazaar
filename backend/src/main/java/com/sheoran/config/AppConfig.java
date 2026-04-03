@@ -61,6 +61,7 @@ public class AppConfig {
                         .requestMatchers("/api/products/*/reviews").permitAll()
 
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
 
                         .anyRequest().permitAll()
