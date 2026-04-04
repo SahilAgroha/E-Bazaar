@@ -43,6 +43,15 @@ const Checkout = () => {
             setSelectedAddress(user.addresses[0]);
         }
     }, [user]);
+    const handleAddAddress = (values) => {
+    console.log(values);
+
+    // Example: dispatch to backend
+    // dispatch(addAddress(values))
+
+    setSelectedAddress(values); // optional
+    setOpen(false); // close modal
+};
 
     const handleCheckout = () => {
 
@@ -92,10 +101,19 @@ const Checkout = () => {
                             <AddressCard
                                 key={item.id}
                                 item={item}
-                                isSelected={selectedAddress?.id === item.id}
+                                isSelected={selectedAddress?.id === item.id || selectedAddress === item}
                                 onSelect={() => setSelectedAddress(item)}
                             />
                         ))}
+
+                        {/* Render locally added unsaved address */}
+                        {selectedAddress && !selectedAddress.id && (
+                            <AddressCard
+                                item={selectedAddress}
+                                isSelected={true}
+                                onSelect={() => setSelectedAddress(selectedAddress)}
+                            />
+                        )}
 
                         <Button onClick={() => setOpen(true)}>Add New Address</Button>
                     </div>
@@ -133,7 +151,7 @@ const Checkout = () => {
 
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Box sx={style}>
-                    <AddressForm />
+                    <AddressForm onFormSubmit={handleAddAddress}/>
                 </Box>
             </Modal>
         </>

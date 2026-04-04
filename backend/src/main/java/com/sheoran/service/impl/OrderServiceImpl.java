@@ -6,6 +6,7 @@ import com.sheoran.model.*;
 import com.sheoran.repository.AddressRepo;
 import com.sheoran.repository.OrderItemRepo;
 import com.sheoran.repository.OrderRepo;
+import com.sheoran.repository.UserRepo;
 import com.sheoran.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class OrderServiceImpl implements OrderService {
     private AddressRepo addressRepo;
     @Autowired
     private OrderItemRepo orderItemRepo;
+    @Autowired
+    private UserRepo userRepo;
 
     @Override
     public Set<Order> createOrder(User user, Address shippingAddress, Cart cart) {
@@ -42,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
             // New address → save
             savedAddress = addressRepo.save(shippingAddress);
             user.getAddresses().add(savedAddress);
+            userRepo.save(user);
         }
 
         Map<Long, List<CartItem>> itemsBySeller =
