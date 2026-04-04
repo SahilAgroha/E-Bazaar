@@ -175,6 +175,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse signing(LoginRequest req) {
         String username = req.getEmail();
         String otp = req.getOtp();
+        System.out.println("\n\n\n ReqOtp: " +otp);
 
         Authentication authentication = authenticate(username, otp);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -193,8 +194,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Authentication authenticate(String username, String otp) {
+        System.out.println("Before userDetails");
         UserDetails userDetails = customUserService.loadUserByUsername(username);
-
+        System.out.println("After userDetails "+userDetails);
         String SELLER_PREFIX = "seller_";
         String actualUsername = username;
         if (actualUsername.startsWith(SELLER_PREFIX)) {
@@ -204,9 +206,9 @@ public class AuthServiceImpl implements AuthService {
         if (userDetails == null) {
             throw new BadCredentialsException("invalid username");
         }
-
+        System.out.println("actual username "+actualUsername);
         VerificationCode verificationCode = verificationCodeRepo.findByEmail(actualUsername);
-
+        System.out.println("Verification otp : "+verificationCode.getOtp());
         if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
             throw new BadCredentialsException("wrong otp");
         }

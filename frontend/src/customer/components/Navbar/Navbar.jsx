@@ -32,7 +32,7 @@ const Navbar = () => {
 
   return (
     <>
-      <Box className="sticky top-0 left-0 right-0 bg-white" sx={{ zIndex: 2 }}>
+      <Box className="sticky top-0 left-0 right-0 bg-white z-50" sx={{ zIndex: 50 }}>
         <div className="flex items-center justify-between px-5 lg:px-20 h-[70px] border-b select-none">
           <div className="flex items-center gap-9">
             <div className="flex items-center gap-2">
