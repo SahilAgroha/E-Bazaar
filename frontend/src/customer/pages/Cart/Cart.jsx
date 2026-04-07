@@ -37,10 +37,10 @@ const Cart = () => {
     };
 
     const handleRemoveCoupon = () => {
-      if (coupon?.cart?.coupon?.code) {
+      if (cart.cart?.couponCode) {
           dispatch(applyCoupon({
               apply: "false",
-              code: coupon.cart.coupon.code,
+              code: cart.cart.couponCode,
               orderValue: 0, // Order value is not needed for removal but must be passed
               jwt,
           }));
@@ -75,7 +75,7 @@ const Cart = () => {
                             </div>
                             <span>Apply Now</span>
                         </div>
-                        {coupon?.couponApplied ? (
+                        {cart.cart?.couponCode ? (
                             <div className='flex justify-center items-center'>
                                 
                                 <TextField
@@ -83,7 +83,7 @@ const Cart = () => {
                                     placeholder='coupon code'
                                     size='small'
                                     variant='outlined'
-                                    value={coupon?.cart?.coupon?.code}
+                                    value={cart.cart?.couponCode}
                                     disabled
                                 />
                                 <Button size='small' onClick={handleRemoveCoupon}>

@@ -82,10 +82,18 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderStatus(OrderStatus.PENDING);
             order.setPaymentStatus(PaymentStatus.PENDING);
 
+            if (cart.getDiscount() > 0) {
+                BigDecimal discountPercentage = BigDecimal.valueOf(cart.getDiscount());
+                BigDecimal discountAmount = totalSellingPrice
+                        .multiply(discountPercentage)
+                        .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                totalSellingPrice = totalSellingPrice.subtract(discountAmount);
+            }
+
             order.setTotalSellingPrice(totalSellingPrice);
             order.setTotalMrpPrice(totalMrpPrice);
             order.setTotalItems(totalItems);
-            order.setDiscount(totalMrpPrice.subtract(totalSellingPrice));
+            order.setDiscount(BigDecimal.valueOf(cart.getDiscount()));
 
             order.setOrderId(UUID.randomUUID().toString());
 

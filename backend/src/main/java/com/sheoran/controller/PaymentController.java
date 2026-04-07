@@ -28,6 +28,11 @@ public class PaymentController {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private com.sheoran.repository.CartItemRepo cartItemRepo;
+    @Autowired
+    private com.sheoran.repository.CartRepo cartRepo;
+
     @GetMapping("/{paymentId}")    //  1
     public ResponseEntity<ApiResponse> paymentSuccessHandler(@PathVariable String paymentId,
                                                              @RequestParam String paymentLinkId,
@@ -49,6 +54,19 @@ public class PaymentController {
                 report.setTotalEarning(report.getTotalEarning().add(order.getTotalSellingPrice()));
                 report.setTotalSales(report.getTotalSales().add(BigDecimal.valueOf(order.getOrderItems().size())));
                 sellerReportService.updateSellerReport(report);
+            }
+
+            // Clear the cart
+            Cart cart = cartRepo.findByUserId(user.getId());
+            if (cart != null && !cart.getCartItems().isEmpty()) {
+                cartItemRepo.deleteAll(cart.getCartItems());
+                cart.getCartItems().clear();
+                cart.setTotalItem(0);
+                cart.setTotalMrpPrice(BigDecimal.ZERO);
+                cart.setTotalSellingPrice(BigDecimal.ZERO);
+                cart.setDiscount(0);
+                cart.setCouponCode(null);
+                cartRepo.save(cart);
             }
 
         }

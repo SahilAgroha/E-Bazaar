@@ -20,8 +20,8 @@ export const applyCoupon=createAsyncThunk<Cart,{apply:string;code:string;orderVa
             console.log("applyCoupon params  ",{apply,code,orderValue});
             console.log("apply coupon  ",response.data);
             return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response.data.message || "Faild to apply coupon")
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Faild to apply coupon")
         }
     }
 );
@@ -50,6 +50,8 @@ const couponSlice=createSlice({
             state.cart=action.payload;
             if(action.meta.arg.apply=='true'){
                 state.couponApplied=true;
+            } else {
+                state.couponApplied=false;
             }
         })
         .addCase(applyCoupon.rejected,(state,action:PayloadAction<string | undefined>)=>{

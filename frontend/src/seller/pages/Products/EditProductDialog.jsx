@@ -44,6 +44,37 @@ const getCategoryId = (cat) => {
   return typeof cat === "object" ? (cat.categoryId || cat.name || "") : cat;
 };
 
+const getCategoryHierarchy = (categoryId) => {
+  if (!categoryId) return { category: "", category2: "", category3: "" };
+  
+  for (const main of mainCategory) {
+    if (main.categoryId === categoryId) {
+      return { category: main.categoryId, category2: "", category3: "" };
+    }
+    for (const sub of main.levelTwoCategory || []) {
+      if (sub.categoryId === categoryId) {
+        return { category: main.categoryId, category2: sub.categoryId, category3: "" };
+      }
+      for (const leaf of sub.levelThreeCategory || []) {
+        if (leaf.categoryId === categoryId) {
+          return { category: main.categoryId, category2: sub.categoryId, category3: leaf.categoryId };
+        }
+      }
+    }
+  }
+  
+  // Custom fallback splitting by `_` just in case it's not found in the mainCategory array
+  const parts = categoryId.split('_');
+  if (parts.length >= 3) {
+    return { 
+      category: parts[0], 
+      category2: `${parts[0]}_${parts[1]}`, 
+      category3: categoryId 
+    };
+  }
+  return { category: categoryId, category2: "", category3: "" };
+};
+
 const EditProductDialog = ({ open, onClose, product }) => {
   const dispatch = useAppDispatch();
   const jwt = localStorage.getItem("jwt");
@@ -51,6 +82,8 @@ const EditProductDialog = ({ open, onClose, product }) => {
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(false); // Controls unsaved changes prompt
+
+  const resolvedCategories = getCategoryHierarchy(product?.category?.categoryId);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -62,18 +95,23 @@ const EditProductDialog = ({ open, onClose, product }) => {
       quantity: product?.quantity || "",
       color: product?.color || "",
       images: product?.images || [],
-      category: getCategoryId(product?.category),
-      category2: getCategoryId(product?.category2),
-      category3: getCategoryId(product?.category3),
+      category: resolvedCategories.category,
+      category2: resolvedCategories.category2,
+      category3: resolvedCategories.category3,
       sizes: product?.sizes || "",
     },
     onSubmit: async (values) => {
       try {
         if (jwt && product) {
+          // The backend updateProduct uses the Product entity which doesn't
+          // support category2, category3 natively, resolving to 400 bad request.
+          // Since categories aren't editable in the backend update anyway, we omit them.
+          const { category, category2, category3, ...updatePayload } = values;
+
           await dispatch(
             updateProduct({
               productId: product.id,
-              product: values,
+              product: updatePayload,
               jwt,
             })
           );

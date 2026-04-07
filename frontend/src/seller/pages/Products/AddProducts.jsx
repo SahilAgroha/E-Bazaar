@@ -32,7 +32,8 @@ const AddProducts = () => {
     onSubmit: async (values, { resetForm }) => {
           try {
             console.log("Submitting product with values:", values);
-            await dispatch(createProduct({ request: values, jwt: localStorage.getItem('jwt') }));
+            const mappedValues = { ...values, size: values.sizes };
+            await dispatch(createProduct({ request: mappedValues, jwt: localStorage.getItem('jwt') }));
             // refresh seller product list after creating
             dispatch(fetchSellerProducts(localStorage.getItem('jwt')));
             resetForm();

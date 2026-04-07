@@ -27,6 +27,7 @@ export const fetchUserCart=createAsyncThunk<Cart,string>("cart/fetchUserCart",
                     Authorization:`Bearer ${jwt}`,
                 },
             });
+            console.log("Cart response = = ",response.data);
             return response.data;
         } catch (error) {
             console.log("error = = >",error);

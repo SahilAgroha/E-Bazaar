@@ -1,17 +1,25 @@
 import { Divider } from '@mui/material'
 import React from 'react'
+import { sumCartItemSellingPrice } from '../../../Util/sumCartItemMrpPrice'
 
 const PricingCard = ({cart}) => {
     const totalMrp = cart?.totalMrpPrice || 0;
     const totalSelling = cart?.totalSellingPrice || 0;
-    const discountPercent = cart?.discount || 0;
     const shipping = cart?.shipping || 0;
+    const couponPercentage = cart?.discount || 0;
+    console.log("Cart ==== ",cart);
 
-    // Discount amount from percentage on selling price
-    const discountAmount = (totalSelling * discountPercent) / 100;
+    // Calculate sum of base selling price from items
+    let baseSellingPrice = totalSelling;
+    if (cart?.cartItems && cart.cartItems.length > 0) {
+        baseSellingPrice = sumCartItemSellingPrice(cart.cartItems);
+    }
+
+    const productDiscountAmount = totalMrp - baseSellingPrice;
+    const couponDiscountAmount = baseSellingPrice - totalSelling;
 
     // Final payable amount
-    const finalPrice = totalSelling - discountAmount + shipping;
+    const finalPrice = totalSelling + shipping;
 
     return (
         <>
@@ -22,14 +30,16 @@ const PricingCard = ({cart}) => {
                 </div>
 
                 <div className='flex justify-between items-center'>
-                    <span>Total Selling Price</span>
-                    <span>₹{totalSelling}</span>
+                    <span>Product Discount</span>
+                    <span className='text-green-600'>-₹{productDiscountAmount}</span>
                 </div>
-
-                <div className='flex justify-between items-center'>
-                    <span>Coupon Discount ({discountPercent}%)</span>
-                    <span className='text-red-600'>-₹{discountAmount}</span>
-                </div>
+                
+                {cart?.couponCode && couponPercentage > 0 && (
+                    <div className='flex justify-between items-center'>
+                        <span>Coupon Discount ({couponPercentage}%)</span>
+                        <span className='text-green-600'>-₹{couponDiscountAmount.toFixed(2)}</span>
+                    </div>
+                )}
 
                 <div className='flex justify-between items-center'>
                     <span>Shipping</span>
@@ -44,9 +54,9 @@ const PricingCard = ({cart}) => {
 
             <Divider/>
 
-            <div className='flex justify-between items-center p-5 text-[#00927c] font-semibold'>
+            <div className='flex justify-between items-center p-5 text-[#00927c] font-semibold text-lg'>
                 <span>Final Payable</span>
-                <span>₹{finalPrice}</span>
+                <span>₹{finalPrice.toFixed(2)}</span>
             </div>
         </>
     );

@@ -55,15 +55,24 @@ public class CouponServiceImpl implements CouponService {
         user.getUsedCoupons().add(coupon);
         userRepo.save(user);
 
+        BigDecimal totalSelling = BigDecimal.ZERO;
+        BigDecimal totalMrp = BigDecimal.ZERO;
+        for (com.sheoran.model.CartItem item : cart.getCartItems()) {
+            totalSelling = totalSelling.add(item.getSellingPrice());
+            totalMrp = totalMrp.add(item.getMrpPrice());
+        }
+
         // Calculate discount
-        BigDecimal discountAmount = cart.getTotalSellingPrice()
+        BigDecimal discountAmount = totalSelling
                 .multiply(coupon.getDiscountPercentage())
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
-        BigDecimal finalPrice = cart.getTotalSellingPrice().subtract(discountAmount);
+        BigDecimal finalPrice = totalSelling.subtract(discountAmount);
 
         cart.setTotalSellingPrice(finalPrice);
         cart.setCouponCode(code);
+
+        cart.setDiscount(coupon.getDiscountPercentage().intValue());
 
         return cartRepo.save(cart);
     }
@@ -79,15 +88,19 @@ public class CouponServiceImpl implements CouponService {
 
         Cart cart = cartRepo.findByUserId(user.getId());
 
-        BigDecimal discountAmount = cart.getTotalSellingPrice()
-                .multiply(coupon.getDiscountPercentage())
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        user.getUsedCoupons().remove(coupon);
+        userRepo.save(user);
 
-        cart.setTotalSellingPrice(
-                cart.getTotalSellingPrice().add(discountAmount)
-        );
+        BigDecimal totalSelling = BigDecimal.ZERO;
+        BigDecimal totalMrp = BigDecimal.ZERO;
+        for (com.sheoran.model.CartItem item : cart.getCartItems()) {
+            totalSelling = totalSelling.add(item.getSellingPrice());
+            totalMrp = totalMrp.add(item.getMrpPrice());
+        }
 
+        cart.setTotalSellingPrice(totalSelling);
         cart.setCouponCode(null);
+        cart.setDiscount(0);
 
         return cartRepo.save(cart);
     }

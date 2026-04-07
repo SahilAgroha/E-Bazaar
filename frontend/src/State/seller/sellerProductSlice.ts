@@ -12,6 +12,7 @@ export const fetchSellerProducts = createAsyncThunk<Product[], string | null>(
           Authorization: `Bearer ${jwt}`,
         },
       });
+      console.log("Seller products response = = ",response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data.message || "Failed to fetch products");
