@@ -1,30 +1,33 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const SimilarProudctCard = () => {
+const SimilarProudctCard = ({ product }) => {
+  const navigate = useNavigate();
+
   return (
-    <div>
+    <div onClick={() => navigate(`/product-details/${product.category?.categoryId}/${product.id}`)} className="cursor-pointer">
         <div className="group px-4 relative">
         <div className="card">
           
             <img
             className='card-media object-top' 
-            src={"https://sareesbazaar.in/cdn/shop/files/SB61_2974_30011A_14b3c73a-b2b0-414f-8557-af7575d8e06b.jpg?v=1749814391&width=1680"} alt=''/>
+            src={product.images && product.images.length > 0 ? product.images[0] : ""} alt={product.title}/>
           
         </div>
         <div className="details pt-3 space-y-1 group-hover-effect rounded-md">
           <div className="name">
-            <h1>Niky</h1>
-            <p>Black T-Shirt</p>
+            <h1>{product.seller?.businessDetails?.businessName || 'Seller'}</h1>
+            <p>{product.title}</p>
           </div>
           <div className="price flex items-center gap-3">
             <span className="font-sans text-gray-800">
-              ₹ 400
+              ₹ {product.sellingPrice}
             </span>
             <span className="thin-line-through text-gray-400  ">
-              ₹ 999
+              ₹ {product.mrpPrice}
             </span>
             <span className="text-[#00927c] font-semibold">
-              60% off
+              {product.discountPercentage}% off
             </span>
           </div>
 
@@ -34,4 +37,4 @@ const SimilarProudctCard = () => {
   )
 }
 
-export default SimilarProudctCard
+export default SimilarProudctCard;

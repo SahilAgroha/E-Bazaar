@@ -11,7 +11,7 @@ import SimilarProduct from './SimilarProduct';
 import ReviewCard from '../Review/ReviewCard';
 import { useAppDispatch, useAppSelector } from '../../../State/Store';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchProductById } from '../../../State/customer/ProductSlice';
+import { fetchProductById, fetchSimilarProducts } from '../../../State/customer/ProductSlice';
 import { addItemToCart } from '../../../State/customer/cartSlice';
 import { addProductToWishlist } from '../../../State/customer/wishlistSlice';
 import { fetchProductReviews, writeReview } from '../../../State/customer/reviewSlice';
@@ -39,6 +39,7 @@ const ProductDetails = () => {
         if (productId) {
             dispatch(fetchProductById(Number(productId)));
             dispatch(fetchProductReviews(Number(productId)));
+            dispatch(fetchSimilarProducts(Number(productId)));
         }
     }, [productId, dispatch]);
 

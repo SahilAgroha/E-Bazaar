@@ -37,6 +37,26 @@ export const searchProduct=createAsyncThunk('products/searchProduct',
             console.log("error - - - ",error);
             rejectWithValue(error.message);
         }
+}
+)
+
+export const fetchSimilarProducts = createAsyncThunk('products/fetchSimilarProducts',
+    async(productId: number, {rejectWithValue})=>{
+        try {
+            const response = await api.get(`/api/recommendations`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwt')}`
+                },
+                params: {
+                    currentProductId: productId
+                }
+            });
+            console.log('similar product data - - - ', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.log("error - - - ", error);
+            return rejectWithValue(error.message);
+        }
     }
 )
 
@@ -74,6 +94,7 @@ interface ProductState{
     loading:boolean;
     error:string | null | undefined | any;
     searchProduct:Product[];
+    similarProducts: Product[];
 }
  const initialState:ProductState={
     product:null,
@@ -82,6 +103,7 @@ interface ProductState{
     loading:false,
     error: null ,
     searchProduct:[],
+    similarProducts: [],
  }
 
  const productSlice=createSlice({
@@ -124,6 +146,18 @@ interface ProductState{
         });
 
         builder.addCase(searchProduct.rejected,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload;
+        });
+
+        builder.addCase(fetchSimilarProducts.pending,(state)=>{
+            state.loading=true;
+        });
+        builder.addCase(fetchSimilarProducts.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.similarProducts = Array.isArray(action.payload) ? action.payload : [];
+        });
+        builder.addCase(fetchSimilarProducts.rejected,(state,action)=>{
             state.loading=false;
             state.error=action.payload;
         });
